@@ -1,0 +1,15 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/payment"
+    },
+    "response": {
+      "status": 200,
+      "jsonBody": {
+        "latency": 200
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+  }

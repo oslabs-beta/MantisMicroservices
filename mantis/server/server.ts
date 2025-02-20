@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     stopTimer({
       method: req.method,
-      route: req.route?.path || req.url,
+      route: req.route ? req.route.path : req.originalUrl,
       status: res.statusCode,
     });
   });
