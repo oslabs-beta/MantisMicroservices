@@ -30,9 +30,18 @@ export default function () {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    const p50Res = http.get("http://express-api:3001/latencyp50", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
     check(rpsRes, {
       "rps request successful": (res) => res.status === 200,
     });
+
+    check(p50Res, {
+      "p50 request successful": (res) => res.status === 200,
+    });
+
   }
 
   sleep(1);

@@ -48,7 +48,7 @@ app.get("/rps", authMiddleware, rpsController);
 app.get("/trafficEndpoint", authMiddleware, trafficEndpoint);
 app.get("/error4xx", authMiddleware, error4xx);
 app.get("/error5xx", authMiddleware, error5xx);
-app.get("/latency50", authMiddleware, p50Latency);
+app.get("/latencyp50", authMiddleware, p50Latency);
 app.get("/latencyp90", authMiddleware, p90Latency);
 app.get("/latencyp99", authMiddleware, p99Latency);
 app.post("/create-user", createNewUser);
