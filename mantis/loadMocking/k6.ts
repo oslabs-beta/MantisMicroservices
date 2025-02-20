@@ -14,7 +14,7 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
 
-export let options = {
+export const options = {
   vus: 3,  // Number of virtual users (simulating different users)
   duration: "30s",
 };
@@ -26,9 +26,9 @@ const users = [
 ];
 
 export default function () {
-  let user = users[__VU % users.length]; // Assign users based on VU index
+  const user = users[__VU % users.length]; // Assign users based on VU index
 
-  let loginRes = http.post("http://express-api:3001/login", JSON.stringify(user), {
+  const loginRes = http.post("http://express-api:3001/login", JSON.stringify(user), {
     headers: { "Content-Type": "application/json" },
   });
 
@@ -36,10 +36,10 @@ export default function () {
     "login successful": (res) => res.status === 200,
   });
 
-  let token = loginRes.json("token"); // Extract token from response
+  const token = loginRes.json("token"); // Extract token from response
 
   if (token) {
-    let rpsRes = http.get("http://express-api:3001/rps", {
+    const rpsRes = http.get("http://express-api:3001/rps", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
