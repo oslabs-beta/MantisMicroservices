@@ -34,53 +34,52 @@ const NavBar: React.FC = () => {
           }
         `}
       </style>
-      <nav className="flex items-center justify-between bg-[#193B2D] p-4 shadow-md">
+      <nav className='flex items-center justify-between bg-[#193B2D] p-4 shadow-md'>
         {/* Left side - logo and brand name */}
-        <Link to="/" className="flex items-center">
-          <img
-            src={mantisLogo}
-            alt="Mantis Logo"
-            className="h-12 w-12 mr-2"
-          />
+        <Link to='/' className='flex items-center'>
+          <img src={mantisLogo} alt='Mantis Logo' className='h-12 w-12 mr-2' />
           <span
-            className="text-white text-2xl font-bold"
+            className='text-white text-2xl font-bold'
             style={{ fontFamily: '"Faustina", sans-serif' }}
           >
             Mantis
           </span>
         </Link>
         {/* Right side - GitHub, Dashboard, Login, Documentation */}
-        <div className="flex space-x-4 items-center">
+        <div className='flex space-x-4 items-center'>
           <a
-            href="https://github.com/oslabs-beta/mantis_project"
-            target="_blank"
-            rel="noreferrer"
-            className="text-white hover:text-gray-300 transition-colors"
+            href='https://github.com/oslabs-beta/mantis_project'
+            target='_blank'
+            rel='noreferrer'
+            className='text-white hover:text-gray-300 transition-colors'
           >
             GitHub
           </a>
           <button
             onClick={handleDashboardClick}
-            className="relative overflow-hidden group px-4 py-2 bg-green-500 hover:bg-indigo-500 text-white font-semibold rounded-md shadow transition-colors duration-150 ease-in-out"
+            className='relative overflow-hidden group px-4 py-2 bg-green-500 hover:bg-indigo-500 text-white font-semibold rounded-md shadow transition-colors duration-150 ease-in-out'
             style={isBursting ? { animation: 'burst 0.4s forwards' } : {}}
           >
             Dashboard
-            <span className="absolute -left-[100%] top-0 w-[200%] h-full transform rotate-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-all duration-500 ease-out pointer-events-none">
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
+            <span className='absolute -left-[100%] top-0 w-[200%] h-full transform rotate-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-[200%] transition-all duration-500 ease-out pointer-events-none'>
+              <svg
+                viewBox='0 0 100 100'
+                preserveAspectRatio='none'
+                className='w-full h-full'
+              >
                 <path
-                  d="M0,20 C20,0 80,0 100,20 C80,40 20,40 0,20 Z"
-                  fill="rgba(0,255,0,0.7)"
+                  d='M0,20 C20,0 80,0 100,20 C80,40 20,40 0,20 Z'
+                  fill='rgba(0,255,0,0.7)'
                 />
               </svg>
             </span>
           </button>
           <button
             onClick={() => navigate('/login')}
-            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-md shadow transition duration-150 ease-in-out"
+            className='px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-md shadow transition duration-150 ease-in-out'
           >
             Login
           </button>
-    
         </div>
       </nav>
       <style>{`
