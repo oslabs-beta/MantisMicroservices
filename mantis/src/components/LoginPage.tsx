@@ -1,6 +1,6 @@
 import React from 'react';
 import Login from './Login';
-import Logo from '../assets/logo.png';
+import Logo from '../assets/Logo.png';
 
 const LoginPage: React.FC = () => {
   // Dummy OAuth handler; replace with your actual OAuth login logic
