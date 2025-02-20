@@ -1,12 +1,11 @@
 import axios from "axios";
 import { Point, InfluxDB } from "@influxdata/influxdb-client";
-import { influxDB } from "../controllers/userController";
-import { Response, NextFunction } from "express";
-import { AuthenticatedRequest, TrafficController } from "../types/types";
+// import { influxDB } from "../controllers/userController";
+import { Response, NextFunction, RequestHandler } from "express";
+import { AuthenticatedRequest } from "../types/types";
 import User from "../models/userModel";
 
-export const trafficController: TrafficController = {
-  rps: async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const rpsController: RequestHandler = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     console.log("RPS method in latency controller trigger");
     try {
       if (!req.user) {
@@ -85,9 +84,11 @@ export const trafficController: TrafficController = {
       console.error("❌ Error fetching or storing RPS:", err);
       return next(err);
     }
-  },
+  };
+  
 // testing when k6 its done
-  trafficEndpoint: async (req, res, next) => {
+
+export const trafficEndpoint: RequestHandler = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       if (!req.user) {
         return res.status(401).json({ error: "Unauthorized: No user found" });
@@ -159,5 +160,5 @@ export const trafficController: TrafficController = {
       console.error("Error fetching or storing traffic data:", err);
       return next(err);
     }
-  },
-};
+  };
+

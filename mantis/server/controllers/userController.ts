@@ -7,20 +7,21 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/userModel";
-import { IUser, UserController } from "../types/types";
+import { IUser } from "../types/types";
+import { Response, NextFunction, RequestHandler, Request } from "express";
 
 dotenv.config();
 
 const INFLUX_URL = "http://influxdb:8086";
 const INFLUX_TOKEN = "supersecret";
-const ORG = "MainOrg";
+// const ORG = "MainOrg";
 const ORG_ID = process.env.INFLUX_ORG_ID || "3ac2a3157de776b5";
 const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN });
 const bucketsApi = new BucketsAPI(influxDB);
 const authApi = new AuthorizationsAPI(influxDB);
 
-export const userController: UserController = {
-  createNewUser: async (req: any, res: any, next: any) => {
+
+export const createNewUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body;
 
@@ -84,9 +85,9 @@ export const userController: UserController = {
       console.error("Error creating user:", error);
       return next();
     }
-  },
+  };
 
-  loginUser: async (req: any, res: any, next: any) => {
+export const loginUser: RequestHandler  = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { username, password } = req.body;
         if (!username || !password) {
@@ -127,7 +128,7 @@ export const userController: UserController = {
         console.error("Error logging user in:", error);
         next(error);
       }
-  },
-};
+  };
+
 
 export { influxDB };
