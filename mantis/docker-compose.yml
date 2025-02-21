@@ -4,7 +4,7 @@ services:
       context: ./server
     container_name: express-api
     ports:
-      - "3001:3001"
+      - '3001:3001'
     depends_on:
       - prometheus
       - influxdb
@@ -19,7 +19,7 @@ services:
     image: influxdb:2.7.1
     container_name: influxdb
     ports:
-      - "8086:8086"
+      - '8086:8086'
     environment:
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: admin
@@ -31,7 +31,7 @@ services:
     volumes:
       - ./influx_data:/var/lib/influxdb2
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8086/health']
       interval: 10s
       retries: 5
       start_period: 5s
@@ -41,7 +41,7 @@ services:
     container_name: mongodb
     restart: always
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=adminpassword
@@ -52,7 +52,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
 
@@ -63,7 +63,7 @@ services:
       - GF_SECURITY_X_FRAME_OPTIONS=allow
     container_name: grafana
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - prometheus
     volumes:
@@ -73,10 +73,10 @@ services:
     image: wiremock/wiremock:latest
     container_name: wiremock
     ports:
-      - "8080:8080"
+      - '8080:8080'
     volumes:
-      - ./wiremock:/home/wiremock 
-    command: ["--verbose", "--root-dir", "/home/wiremock"]
+      - ./wiremock:/home/wiremock
+    command: ['--verbose', '--root-dir', '/home/wiremock']
 
   k6:
     image: grafana/k6
@@ -85,5 +85,4 @@ services:
       - express-api
     volumes:
       - ./loadMocking:/scripts
-    command: ["run", "/scripts/k6.ts"]
-  
+    command: ['run', '/scripts/k6.ts']
