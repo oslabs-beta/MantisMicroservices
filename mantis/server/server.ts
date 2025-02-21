@@ -31,11 +31,9 @@ app.use((req, res, next) => {
   const stopTimer = httpRequestDuration.startTimer();
   res.on('finish', () => {
     stopTimer({
-     
       method: req.method,
       route: req.route ? req.route.path : req.originalUrl,
       status: res.statusCode,
-   ,
     });
   });
   next();
