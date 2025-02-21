@@ -1,4 +1,4 @@
-import express, { ErrorRequestHandler } from "express";
+import express, { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import { ServerError } from "./types/types.js";
 import {
   rpsController,
@@ -23,19 +23,18 @@ connectDB();
 const httpRequestDuration = new client.Histogram({
   name: "http_request_duration_seconds",
   help: "Duration of HTTP requests in seconds",
-  labelNames: ["method", "route", "status"],
+  labelNames: ["method", "route", "status", "user"],
   buckets: [0.1, 0.3, 0.5, 1, 1.5, 2], // Define the bucket intervals
 });
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const stopTimer = httpRequestDuration.startTimer();
   res.on('finish', () => {
     stopTimer({
-     
       method: req.method,
       route: req.route ? req.route.path : req.originalUrl,
       status: res.statusCode,
-   ,
+      user: req.user?.username || "anonymous",
     });
   });
   next();

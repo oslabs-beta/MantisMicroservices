@@ -26,19 +26,19 @@ export default function () {
   const token = loginRes.json("token"); // Extract token from response
 
   if (token) {
-    const rpsRes = http.get("http://express-api:3001/rps", {
+    const orderServices = http.get("http://wiremock:8080/order-services", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    const p50Res = http.get("http://express-api:3001/latencyp50", {
+    const paymentServices = http.get("http://wiremock:8080/payment-services", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    check(rpsRes, {
+    check(orderServices, {
       "rps request successful": (res) => res.status === 200,
     });
 
-    check(p50Res, {
+    check(paymentServices, {
       "p50 request successful": (res) => res.status === 200,
     });
 
@@ -52,7 +52,7 @@ export default function () {
 
 // export let options = {
 //   scenarios: {
-//     get_user: {
+//     nameOfEndpoint: {
 //       executor: "constant-arrival-rate",
 //       rate: 4,  // 4 requests per second
 //       timeUnit: "1s",
@@ -60,7 +60,7 @@ export default function () {
 //       preAllocatedVUs: 10,
 //       maxVUs: 20,
 //     },
-//     get_main: {
+//     endpoint2: {
 //       executor: "constant-arrival-rate",
 //       rate: 10, // 10 requests per second
 //       timeUnit: "1s",
@@ -83,8 +83,8 @@ export default function () {
 //   let res;
 
 //   // Distribute traffic by scenario
-//   if (__ENV.SCENARIO === "get_user") {
-//     res = http.get("http://express-api:3001/get-user");
+//   if (__ENV.SCENARIO === "order-services") {
+//     res = http.get("http://wiremock:8080/order-services");
 //   } else if (__ENV.SCENARIO === "get_main") {
 //     res = http.get("http://express-api:3001/get-main");
 //   } else if (__ENV.SCENARIO === "get_mocking1") {
