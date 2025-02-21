@@ -7,21 +7,21 @@ export type ServerError = {
   message: { err: string };
 };
 
-export interface LatencyController {
-  p50Latency: (req: any, res: any, next: any) => Promise<void>;
-  p90Latency: (req: any, res: any, next: any) => Promise<void>;
-  p99Latency: (req: any, res: any, next: any) => Promise<void>;
-}
+// export interface LatencyController {
+//   p50Latency: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+//   p90Latency: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+//   p99Latency: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+// }
 
-export interface TrafficController {
-  rps: (req: any, res: any, next: any) => Promise<void>;
-  trafficEndpoint: (req: any, res: any, next: any) => Promise<void>;
-}
+// export interface TrafficController {
+//   rps: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+//   trafficEndpoint: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+// }
 
-export interface UserController {
-  createNewUser: (req: any, res: any, next: any) => Promise<void>;
-  loginUser: (req: any, res: any, next: any) => Promise<void>;
-}
+// export interface UserController {
+//   createNewUser: (req: Request, res: Response, next: NextFunction) => Promise<void> | Response;
+//   loginUser: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+// }
 
 export interface IUser extends Document {
   username: string;

@@ -1,16 +1,3 @@
-// import http from "k6/http";
-// import { sleep } from "k6";
-
-// export let options = {
-//   vus: 3,
-//   duration: "30s",
-// };
-
-// export default function () {
-//   http.get("http://express-api:3001/rps");
-//   sleep(1);
-// }
-
 import http from "k6/http";
 import { check, sleep } from "k6";
 
@@ -43,10 +30,70 @@ export default function () {
       headers: { Authorization: `Bearer ${token}` },
     });
 
+    const p50Res = http.get("http://express-api:3001/latencyp50", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
     check(rpsRes, {
       "rps request successful": (res) => res.status === 200,
     });
+
+    check(p50Res, {
+      "p50 request successful": (res) => res.status === 200,
+    });
+
   }
 
   sleep(1);
 }
+
+// import http from "k6/http";
+// import { check, sleep } from "k6";
+
+// export let options = {
+//   scenarios: {
+//     get_user: {
+//       executor: "constant-arrival-rate",
+//       rate: 4,  // 4 requests per second
+//       timeUnit: "1s",
+//       duration: "30s",
+//       preAllocatedVUs: 10,
+//       maxVUs: 20,
+//     },
+//     get_main: {
+//       executor: "constant-arrival-rate",
+//       rate: 10, // 10 requests per second
+//       timeUnit: "1s",
+//       duration: "30s",
+//       preAllocatedVUs: 10,
+//       maxVUs: 20,
+//     },
+//     get_mocking1: {
+//       executor: "constant-arrival-rate",
+//       rate: 7,
+//       timeUnit: "1s",
+//       duration: "30s",
+//       preAllocatedVUs: 6,
+//       maxVUs: 10,
+//     }
+//   },
+// };
+
+// export default function () {
+//   let res;
+
+//   // Distribute traffic by scenario
+//   if (__ENV.SCENARIO === "get_user") {
+//     res = http.get("http://express-api:3001/get-user");
+//   } else if (__ENV.SCENARIO === "get_main") {
+//     res = http.get("http://express-api:3001/get-main");
+//   } else if (__ENV.SCENARIO === "get_mocking1") {
+//     res = http.get("http://express-api:3001/get-mocking1");
+//   }
+
+//   check(res, {
+//     "is status 200": (r) => r.status === 200,
+//   });
+
+//   sleep(1);
+// }
