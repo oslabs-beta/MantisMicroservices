@@ -1,8 +1,20 @@
 import React from 'react';
-import Login from './Login';
 import Logo from '../assets/Logo.png';
+import Login from './Login'; // We'll pass onLoginSuccess to this
 
-const LoginPage: React.FC = () => {
+// Define an interface for the user if you want typed
+interface LoggedInUser {
+  _id: string;
+  username: string;
+  token: string;
+}
+
+// Props for LoginPage
+interface LoginPageProps {
+  onLoginSuccess?: (user: LoggedInUser) => void;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   // Dummy OAuth handler; replace with your actual OAuth login logic
   const handleOAuthLogin = (provider: string) => {
     console.log(`Initiate OAuth flow for ${provider}`);
@@ -33,8 +45,8 @@ const LoginPage: React.FC = () => {
           {/* “Mantis” or “Welcome Back” or any brand text */}
         </h1>
 
-        {/* Login form component */}
-        <Login />
+        {/* Login form component, pass down onLoginSuccess */}
+        <Login onLoginSuccess={onLoginSuccess} />
 
         {/* OAuth Section */}
         <div className="mt-6 text-center">

@@ -1,36 +1,72 @@
 import React, { useState } from 'react';
 
-const Login: React.FC = () => {
+// For TypeScript, define an interface for user data returned from /login
+interface LoggedInUser {
+  _id: string;
+  username: string;
+  token: string;
+}
+
+interface LoginProps {
+  // Example prop you might use to notify parent component
+  onLoginSuccess?: (user: LoggedInUser) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  
+  // We could store the login error or success message here if desired
+  // const [errorMessage, setErrorMessage] = useState('');
 
-  // Dummy user for demonstration
-  const user = {
-    email: 'test@example.com',
-    password: 'password',
-  };
-
+  // handle controlled inputs
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
-
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
+  // dummy "navigate to register" function
   const handleRegister = () => {
-    // Replace with your actual registration logic or navigation
     alert('Navigate to Registration Page');
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // The new "real fetch" logic for /login
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) {
-      alert('Please enter your email and password');
-    } else if (email !== user.email || password !== user.password) {
-      alert('Invalid email or password');
-    } else {
-      alert('Login successful');
+      alert('Please enter your email (username) and password');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password }),
+      });
+
+      if (!response.ok) {
+        alert('Invalid credentials or server error');
+        return;
+      }
+      const data = await response.json();
+      // data should look like { message, token, user: { _id, username } }
+      alert('Login successful!');
+      
+      // If you have a parent that wants the user data:
+      if (onLoginSuccess) {
+        onLoginSuccess({
+          _id: data.user._id,
+          username: data.user.username,
+          token: data.token,
+        });
+      }
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Error during login');
     }
   };
 
@@ -51,17 +87,23 @@ const Login: React.FC = () => {
         >
           Login
         </h1>
+
+        {/* Main form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Email */}
           <input
-            type="email"
+            type="text"  // or "email" if you truly want email format
             id="email"
-            placeholder="Email"
+            placeholder="Email or Username"
             value={email}
             onChange={handleEmailChange}
-            className="w-full p-2 rounded-md focus:outline-none border 
-                       focus:ring-2 focus:ring-[#A3CD9A]"
+            className="
+              w-full p-2 rounded-md 
+              focus:outline-none border 
+              focus:ring-2 focus:ring-[#A3CD9A]
+            "
           />
+
           {/* Password */}
           <input
             type="password"
@@ -69,9 +111,13 @@ const Login: React.FC = () => {
             placeholder="Password"
             value={password}
             onChange={handlePasswordChange}
-            className="w-full p-2 rounded-md focus:outline-none border 
-                       focus:ring-2 focus:ring-[#A3CD9A]"
+            className="
+              w-full p-2 rounded-md 
+              focus:outline-none border 
+              focus:ring-2 focus:ring-[#A3CD9A]
+            "
           />
+
           {/* Forgot Password */}
           <div className="text-right">
             <button
@@ -81,6 +127,7 @@ const Login: React.FC = () => {
               Forgot Password
             </button>
           </div>
+
           {/* Sign In */}
           <button
             type="submit"
@@ -94,6 +141,7 @@ const Login: React.FC = () => {
           >
             Sign In
           </button>
+
           {/* Register */}
           <button
             type="button"

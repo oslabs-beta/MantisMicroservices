@@ -1,4 +1,4 @@
-import express, { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import express, { ErrorRequestHandler, NextFunction, Response } from "express";
 import { ServerError, UserPrometheus } from "./types/types.js";
 import {
   rpsController,
@@ -14,9 +14,20 @@ import { authMiddleware } from "./middleware/authMiddleware.ts";
 import { createNewUser, loginUser } from "./controllers/userController.ts";
 import * as client from "prom-client";
 import connectDB from "./mongoConnection.ts";
+import cors from "cors";
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 connectDB();
 
