@@ -8,7 +8,6 @@ import tailwindcss from '@tailwindcss/vite';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  plugins: [react(), tailwindcss()],
   server: {
     // change the port to the one we are going to use for backend, same with endpoint
     proxy: {
