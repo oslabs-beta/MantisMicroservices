@@ -86,4 +86,3 @@ services:
     volumes:
       - ./loadMocking:/scripts
     command: ['run', '/scripts/k6.ts']
-
