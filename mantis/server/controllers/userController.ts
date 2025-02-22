@@ -15,7 +15,7 @@ dotenv.config();
 const INFLUX_URL = "http://influxdb:8086";
 const INFLUX_TOKEN = "supersecret";
 const ORG = "MainOrg";
-const ORG_ID = process.env.INFLUX_ORG_ID || "f1a7c515aaf8a430";   
+const ORG_ID = process.env.INFLUX_ORG_ID || "3ac2a3157de776b5";   
 const influxDB = new InfluxDB({ url: INFLUX_URL, token: INFLUX_TOKEN });
 const bucketsApi = new BucketsAPI(influxDB);
 const authApi = new AuthorizationsAPI(influxDB);
