@@ -32,7 +32,7 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
       console.log("Fetching metrics from Prometheus for user:", username);
       // 3️⃣ Query Prometheus for RPS
       const prometheusUrl = "http://prometheus:9090/api/v1/query";
-      const query = "sum(rate(http_api_requests_total[1m]))";
+      const query = `sum(rate(http_api_requests_total, user="${username}"[1m]))`;
 
       const { data } = await axios.get(prometheusUrl, {
         timeout: 5000,
