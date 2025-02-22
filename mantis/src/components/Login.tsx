@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // For TypeScript, define an interface for user data returned from /login
 interface LoggedInUser {
@@ -8,31 +9,30 @@ interface LoggedInUser {
 }
 
 interface LoginProps {
-  // Example prop you might use to notify parent component
+  // Callback to notify parent of a successful login
   onLoginSuccess?: (user: LoggedInUser) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
-  // We could store the login error or success message here if desired
-  // const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate(); // Hook for programmatic navigation
 
-  // handle controlled inputs
+  // Handle controlled inputs
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  // dummy "navigate to register" function
+  // Dummy "navigate to register" function
   const handleRegister = () => {
     alert('Navigate to Registration Page');
   };
 
-  // The new "real fetch" logic for /login
+  // The real fetch logic for /login with automatic redirection on success
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) {
@@ -55,7 +55,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       // data should look like { message, token, user: { _id, username } }
       alert('Login successful!');
       
-      // If you have a parent that wants the user data:
+      // Notify parent of successful login, if callback provided
       if (onLoginSuccess) {
         onLoginSuccess({
           _id: data.user._id,
@@ -63,6 +63,9 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           token: data.token,
         });
       }
+      
+      // Automatically route to the dashboard after login
+      navigate('/dashboard');
       
     } catch (error) {
       console.error('Login error:', error);
@@ -90,18 +93,14 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
         {/* Main form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Email */}
+          {/* Email or Username */}
           <input
-            type="text"  // or "email" if you truly want email format
+            type="text"
             id="email"
             placeholder="Email or Username"
             value={email}
             onChange={handleEmailChange}
-            className="
-              w-full p-2 rounded-md 
-              focus:outline-none border 
-              focus:ring-2 focus:ring-[#A3CD9A]
-            "
+            className="w-full p-2 rounded-md focus:outline-none border focus:ring-2 focus:ring-[#A3CD9A]"
           />
 
           {/* Password */}
@@ -111,11 +110,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
             placeholder="Password"
             value={password}
             onChange={handlePasswordChange}
-            className="
-              w-full p-2 rounded-md 
-              focus:outline-none border 
-              focus:ring-2 focus:ring-[#A3CD9A]
-            "
+            className="w-full p-2 rounded-md focus:outline-none border focus:ring-2 focus:ring-[#A3CD9A]"
           />
 
           {/* Forgot Password */}
@@ -131,12 +126,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           {/* Sign In */}
           <button
             type="submit"
-            className="
-              login-button w-full py-2 mt-2 rounded-md 
-              bg-[#A3CD9A] text-[#193B2D] font-semibold 
-              hover:bg-[#fdf6bf] 
-              transition-colors duration-200
-            "
+            className="login-button w-full py-2 mt-2 rounded-md bg-[#A3CD9A] text-[#193B2D] font-semibold hover:bg-[#fdf6bf] transition-colors duration-200"
             style={{ fontFamily: '"Faustina", sans-serif' }}
           >
             Sign In

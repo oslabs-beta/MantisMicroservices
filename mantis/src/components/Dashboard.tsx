@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Tabs from './Tabs';
 
 interface LoggedInUser {
@@ -13,13 +13,14 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const [viewType, setViewType] = useState('overview');
-  const [timeFrame, setTimeFrame] = useState('1h');
+  const [timeFrame, setTimeFrame] = useState('1h'); // Make sure this is acceptable to Grafana
   const [queryType, setQueryType] = useState('P50');
   const [activeTab, setActiveTab] = useState(0);
 
-  // If you store user data in distinct buckets, build the string:
+  // Construct the bucket name from the logged-in user's username.
   const userBucket = `bucket_${loggedInUser.username}`;
 
+  // Tab labels
   const tabData = [
     { label: 'Overview' },
     { label: 'P50' },
@@ -31,7 +32,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     { label: 'Traffic per endpoint' },
   ];
 
-  // handle the tab change
+  // Update viewType and active tab on tab change.
   const handleTabChange = (index: number) => {
     if (tabData[index].label === 'Overview') {
       setViewType('overview');
@@ -42,13 +43,14 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     setQueryType(tabData[index].label);
   };
 
-  // handle time frame (10m, 1h, 8h, 16h, 1d, 1w)
+  // Update time frame
   const handleTimeFrame = (time: string) => {
     setTimeFrame(time);
   };
 
-  // We incorporate the userBucket in the URL as ?var-bucket=...
-  // also using activeTab, timeFrame, queryType
+  // Build the Grafana URL. 
+  // Make sure that your Grafana dashboard uses a variable named "bucket"
+  // and that the Flux queries refer to it via: from(bucket: "${bucket}")
   const grafanaUrl = `http://localhost:3000/d-solo/${
     viewType === 'overview'
       ? 'becykw30pefpce/testing-grafana-with-volume'
@@ -56,12 +58,17 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   }
   ?orgId=1
   &timezone=browser
-  &var-bucket=${userBucket}               // <--- dynamic bucket
+  &var-bucket=${userBucket}               /* Pass the dynamic bucket variable */
   &panelId=${activeTab + 1}
-  &from=${timeFrame}
+  &from=${timeFrame}                      /* Ensure this time format is valid */
   &to=now
   &queryType=${queryType}
   &__feature.dashboardSceneSolo`;
+
+  // Log the URL for debugging
+  useEffect(() => {
+    console.log("Constructed Grafana URL:", grafanaUrl);
+  }, [grafanaUrl]);
 
   return (
     <div>
@@ -69,7 +76,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
         METRICS
       </h1>
 
-      {/* Example timeFrame selector */}
+      {/* Timeframe selector */}
       <div>
         {['10m', '1h', '8h', '16h', '1d', '1w'].map((tf) => (
           <button key={tf} onClick={() => handleTimeFrame(tf)}>
@@ -82,6 +89,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
 
       <div className="grafana-panels overflow-auto p-3 border-2 border-neutral-950 bg-[#A3CD9A] shadow-xl rounded-2xl">
         {viewType === 'overview' ? (
+          // Show multiple panels for overview
           <div className="grid grid-cols-2 gap-3 max-h-[600px]">
             {[1, 2, 3, 4].map((panel) => (
               <iframe
@@ -93,6 +101,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
             ))}
           </div>
         ) : (
+          // Single panel for other views
           <div className="flex justify-center">
             <iframe
               src={grafanaUrl}
@@ -107,6 +116,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
 };
 
 export default Dashboard;
+;
 
 
 

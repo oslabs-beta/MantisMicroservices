@@ -96,7 +96,8 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
     }
   };
   
-// testing when k6 its done
+
+// Wiremock 
 
 export const trafficEndpoint: RequestHandler = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
