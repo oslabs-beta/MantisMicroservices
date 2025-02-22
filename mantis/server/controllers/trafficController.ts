@@ -15,32 +15,18 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
       // (If you prefer JWT-based auth, see the note below)
       const { username } = req.user;
 
-      
-
-       // --- 1) Optional: forward the request to Wiremock (the "proxy" step) ---
+     
     // For example, you might forward GET /rps to Wiremock's /order endpoint:
-    const wiremockUrl = "http://wiremock:8080/order";
+    const endpointURL = process.env.ENDPOINT_URL || "http://wiremock:8080/order";
     
-    // // If you want to pass along the Bearer token from the original request:
-    // // (this might be useful if Wiremock expects a token, or you simply want 
-    // //  Wiremock to log it.)
-    // const authHeader = req.headers.authorization || "";
-    
-    // // Forward the request
-    // const wiremockResponse = await axios.get(wiremockUrl, {
-    //   headers: {
-    //     Authorization: authHeader,
-    //   },
-    // });
+    const endpointResponse = await axios.get(endpointURL);
 
-    const wiremockResponse = await axios.get(wiremockUrl);
-
-    console.log("Wiremock response:", wiremockResponse.data)
+    console.log("Wiremock response:", endpointResponse.data)
 
       console.log("Fetching metrics from Prometheus for user:", username);
       // 3️⃣ Query Prometheus for RPS
       const prometheusUrl = "http://prometheus:9090/api/v1/query";
-      const query = `sum(rate(http_api_requests_total[1m]))`;
+      const query = `sum(rate(http_api_requests_total [1m]))`;
 // user="${username}"
       const { data } = await axios.get(prometheusUrl, {
         timeout: 5000,
