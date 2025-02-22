@@ -51,11 +51,7 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
       const firstVal = data.data.result[0]?.value;
       const rps = firstVal ? parseFloat(firstVal[1]) : 0;
 
-      if (!username) {
-        return res
-          .status(400)
-          .json({ error: "Missing 'username' in the request body." });
-      }
+     
 
       // 2️⃣ Find the user in Mongo
       const user = await User.findOne({ username });
@@ -63,6 +59,12 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
         return res
           .status(404)
           .json({ error: "No Influx credentials found for this user." });
+      }
+
+      if (!username) {
+        return res
+          .status(400)
+          .json({ error: "Missing 'username' in the request body." });
       }
 
       // 5️⃣ Write the metric to Influx using the user’s token & bucket

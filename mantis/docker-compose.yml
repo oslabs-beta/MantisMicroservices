@@ -13,7 +13,7 @@ services:
       - INFLUX_TOKEN=supersecret
       - ORG=MainOrg
       - BUCKET=myBucket
-      - INFLUX_ORG_ID =f1a7c515aaf8a430 
+      - INFLUX_ORG_ID=f1a7c515aaf8a430 
 
   influxdb:
     image: influxdb:2.7.1
