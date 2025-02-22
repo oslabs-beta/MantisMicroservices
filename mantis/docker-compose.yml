@@ -13,7 +13,7 @@ services:
       - INFLUX_TOKEN=supersecret
       - ORG=MainOrg
       - BUCKET=myBucket
-      - INFLUX_ORG_ID =3ac2a3157de776b5
+      - INFLUX_ORG_ID =f1a7c515aaf8a430 
 
   influxdb:
     image: influxdb:2.7.1
@@ -25,6 +25,7 @@ services:
       DOCKER_INFLUXDB_INIT_USERNAME: admin
       DOCKER_INFLUXDB_INIT_PASSWORD: supersecret
       DOCKER_INFLUXDB_INIT_ORG: MainOrg
+      DOCKER_INFLUXDB_INIT_ORG_ID: f1a7c515aaf8a430 
       DOCKER_INFLUXDB_INIT_BUCKET: myBucket
       DOCKER_INFLUXDB_INIT_RETENTION: 30d
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: supersecret
@@ -35,6 +36,8 @@ services:
       interval: 10s
       retries: 5
       start_period: 5s
+
+      
 
   mongodb:
     image: mongo:latest

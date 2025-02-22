@@ -1,5 +1,5 @@
 import express, { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import { ServerError } from "./types/types.js";
+import { ServerError, UserPrometheus } from "./types/types.js";
 import {
   rpsController,
   trafficEndpoint,
@@ -27,14 +27,14 @@ const httpRequestDuration = new client.Histogram({
   buckets: [0.1, 0.3, 0.5, 1, 1.5, 2], // Define the bucket intervals
 });
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: UserPrometheus, res: Response, next: NextFunction) => {
   const stopTimer = httpRequestDuration.startTimer();
   res.on('finish', () => {
     stopTimer({
       method: req.method,
       route: req.route ? req.route.path : req.originalUrl,
       status: res.statusCode,
-      user: req.user?.username || "anonymous",
+      // user: req.user?.username || "anonymous",
     });
   });
   next();

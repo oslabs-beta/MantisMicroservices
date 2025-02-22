@@ -15,25 +15,33 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
       // (If you prefer JWT-based auth, see the note below)
       const { username } = req.user;
 
-      if (!username) {
-        return res
-          .status(400)
-          .json({ error: "Missing 'username' in the request body." });
-      }
+      
 
-      // 2️⃣ Find the user in Mongo
-      const user = await User.findOne({ username });
-      if (!user || !user.influxToken || !user.bucket) {
-        return res
-          .status(404)
-          .json({ error: "No Influx credentials found for this user." });
-      }
+       // --- 1) Optional: forward the request to Wiremock (the "proxy" step) ---
+    // For example, you might forward GET /rps to Wiremock's /order endpoint:
+    const wiremockUrl = "http://wiremock:8080/order";
+    
+    // // If you want to pass along the Bearer token from the original request:
+    // // (this might be useful if Wiremock expects a token, or you simply want 
+    // //  Wiremock to log it.)
+    // const authHeader = req.headers.authorization || "";
+    
+    // // Forward the request
+    // const wiremockResponse = await axios.get(wiremockUrl, {
+    //   headers: {
+    //     Authorization: authHeader,
+    //   },
+    // });
+
+    const wiremockResponse = await axios.get(wiremockUrl);
+
+    console.log("Wiremock response:", wiremockResponse.data)
 
       console.log("Fetching metrics from Prometheus for user:", username);
       // 3️⃣ Query Prometheus for RPS
       const prometheusUrl = "http://prometheus:9090/api/v1/query";
-      const query = `sum(rate(http_api_requests_total, user="${username}"[1m]))`;
-
+      const query = `sum(rate(http_api_requests_total[1m]))`;
+// user="${username}"
       const { data } = await axios.get(prometheusUrl, {
         timeout: 5000,
         params: { query: query },
@@ -56,6 +64,20 @@ export const rpsController: RequestHandler = async (req: AuthenticatedRequest, r
       // 4️⃣ Extract an RPS value from the first result
       const firstVal = data.data.result[0]?.value;
       const rps = firstVal ? parseFloat(firstVal[1]) : 0;
+
+      if (!username) {
+        return res
+          .status(400)
+          .json({ error: "Missing 'username' in the request body." });
+      }
+
+      // 2️⃣ Find the user in Mongo
+      const user = await User.findOne({ username });
+      if (!user || !user.influxToken || !user.bucket) {
+        return res
+          .status(404)
+          .json({ error: "No Influx credentials found for this user." });
+      }
 
       // 5️⃣ Write the metric to Influx using the user’s token & bucket
       const orgName = process.env.INFLUX_ORG || "MainOrg";

@@ -33,3 +33,7 @@ export interface IUser extends Document {
 export interface AuthenticatedRequest extends Request {
   user?: IUser;
 }
+
+export interface UserPrometheus extends Request{
+  user?: {username : string}
+}
