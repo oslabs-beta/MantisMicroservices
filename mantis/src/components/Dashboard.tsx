@@ -115,9 +115,8 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     // Get time parameters
     const { from, to } = getTimeParams();
     
-    // Build the URL with all necessary parameters
+    // Build the URL with all necessary parameters - removing timezone
     return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
-      &timezone=utc
       &var-bucket=${encodeURIComponent(userBucket)}
       &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
       &var-field=${encodeURIComponent(field)}
