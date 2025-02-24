@@ -5,171 +5,175 @@ import { Response, NextFunction, RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/types";
 import User from "../models/userModel";
 
-export const rpsController: RequestHandler = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    console.log("RPS method in latency controller trigger");
-    try {
-      if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized: No user found" });
-      }
-      // 1️⃣ Retrieve the username from the request body
-      // (If you prefer JWT-based auth, see the note below)
-      const { username } = req.user;
+export const rpsController: RequestHandler = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  console.log("RPS method in latency controller trigger");
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized: No user found" });
+    }
 
-     
-    // For example, you might forward GET /rps to Wiremock's /order endpoint:
+    const { username } = req.user;
+
     const endpointURL = process.env.ENDPOINT_URL || "http://wiremock:8080/order";
-    
+
     const endpointResponse = await axios.get(endpointURL);
 
-    console.log("Wiremock response:", endpointResponse.data)
+    console.log("Wiremock response:", endpointResponse.data);
 
-      console.log("Fetching metrics from Prometheus for user:", username);
-      // 3️⃣ Query Prometheus for RPS
-      const prometheusUrl = "http://prometheus:9090/api/v1/query";
-      const query = `sum(rate(http_api_requests_total [1m]))`;
-// user="${username}"
-      const { data } = await axios.get(prometheusUrl, {
-        timeout: 5000,
-        params: { query: query },
-      });
+    console.log("Fetching metrics from Prometheus for user:", username);
 
-      console.log("Prometheus raw response:", data);
+    const prometheusUrl = "http://prometheus:9090/api/v1/query";
+    const query = `sum(rate(http_api_requests_total [1m]))`;
 
-      if (
-        !data ||
-        data.status !== "success" ||
-        !Array.isArray(data.data?.result) ||
-        data.data.result.length === 0
-      ) {
-        console.warn("No valid RPS data from Prometheus.");
-        return res
-          .status(404)
-          .json({ message: "No RPS data available from Prometheus" });
-      }
+    const { data } = await axios.get(prometheusUrl, {
+      timeout: 5000,
+      params: { query: query },
+    });
 
-      // 4️⃣ Extract an RPS value from the first result
-      const firstVal = data.data.result[0]?.value;
-      const rps = firstVal ? parseFloat(firstVal[1]) : 0;
+    console.log("Prometheus raw response:", data);
 
-     
+    if (
+      !data ||
+      data.status !== "success" ||
+      !Array.isArray(data.data?.result) ||
+      data.data.result.length === 0
+    ) {
+      console.warn("No valid RPS data from Prometheus.");
+      return res
+        .status(404)
+        .json({ message: "No RPS data available from Prometheus" });
+    }
 
-      // 2️⃣ Find the user in Mongo
-      const user = await User.findOne({ username });
-      if (!user || !user.influxToken || !user.bucket) {
-        return res
-          .status(404)
-          .json({ error: "No Influx credentials found for this user." });
-      }
+    const firstVal = data.data.result[0]?.value;
+    const rps = firstVal ? parseFloat(firstVal[1]) : 0;
 
-      if (!username) {
-        return res
-          .status(400)
-          .json({ error: "Missing 'username' in the request body." });
-      }
+    const user = await User.findOne({ username });
+    if (!user || !user.influxToken || !user.bucket) {
+      return res
+        .status(404)
+        .json({ error: "No Influx credentials found for this user." });
+    }
 
-      // 5️⃣ Write the metric to Influx using the user’s token & bucket
-      const orgName = process.env.INFLUX_ORG || "MainOrg";
-      const writeApi = new InfluxDB({
-        url: process.env.INFLUX_URL || "http://influxdb:8086",
-        token: user.influxToken,
-      }).getWriteApi(orgName, user.bucket);
+    if (!username) {
+      return res
+        .status(400)
+        .json({ error: "Missing 'username' in the request body." });
+    }
 
+    const orgName = process.env.INFLUX_ORG || "MainOrg";
+    const writeApi = new InfluxDB({
+      url: process.env.INFLUX_URL || "http://influxdb:8086",
+      token: user.influxToken,
+    }).getWriteApi(orgName, user.bucket);
+
+    const point = new Point("api_performance")
+      .tag("endpoint", "/test-rps")
+      .floatField("rps", rps);
+
+    writeApi.writePoint(point);
+    await writeApi.flush();
+
+    console.log(`✅ Stored RPS value: ${rps} for user: ${username}`);
+
+    return res.json({
+      metric: "rps",
+      value: rps,
+      source: "Prometheus",
+      user: username,
+    });
+  } catch (err) {
+    console.error("❌ Error fetching or storing RPS:", err);
+    return next(err);
+  }
+};
+
+// Wiremock  with diferent endpoints
+export const trafficEndpoint: RequestHandler = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized: No user found" });
+    }
+
+    const { username } = req.user;
+
+    if (!username) {
+      return res
+        .status(400)
+        .json({ error: "Missing username in the request body" });
+    }
+
+    const user = await User.findOne({ username });
+
+    if (!user || !user.influxToken || !user.bucket) {
+      return res
+        .status(404)
+        .json({ error: "No influx credentials found for this user." });
+    }
+
+    console.log(
+      `Fetching traffic metrics from Prometheus for user: ${username}`
+    );
+
+    const prometheusUrl = "http://prometheus:9090/api/v1/query";
+    const query = `sum(rate(http_requests_total{job="express-api"}[1m])) by (route)`;
+
+    const { data } = await axios.get(prometheusUrl, {
+      timeout: 5000,
+      params: { query: query },
+    });
+
+    console.log("Prometheus raw response:", data);
+
+    if (
+      !data ||
+      data.status !== "success" ||
+      !Array.isArray(data.data?.result) ||
+      data.data.result.length === 0
+    ) {
+      console.warn("No valid traffic data from Prometheus");
+      return res
+        .status(404)
+        .json({ message: "No traffic data available from Prometheus" });
+    }
+
+    const trafficData = data.data.result.map((entry) => ({
+      endpoint: entry.metric.route,
+      traffic: parseFloat(entry.value[1]),
+    }));
+
+    const orgName = process.env.INFLUX_ORG || "MainOrg";
+    const writeApi = new InfluxDB({
+      url: process.env.INFLUX_URL || "http://influxdb:8086",
+      token: user.influxToken,
+    }).getWriteApi(orgName, user.bucket);
+
+    trafficData.forEach(({ endpoint, traffic }) => {
       const point = new Point("api_performance")
-        .tag("endpoint", "/test-rps")
-        .floatField("rps", rps);
-
+        .tag("endpoint", endpoint)
+        .floatField("Traffic_endpoint", traffic);
       writeApi.writePoint(point);
-      await writeApi.flush();
+    });
 
-      console.log(`✅ Stored RPS value: ${rps} for user: ${username}`);
+    await writeApi.flush();
 
-      // 6️⃣ Return the metric to the client
-      return res.json({
-        metric: "rps",
-        value: rps,
-        source: "Prometheus",
-        user: username,
-      });
-    } catch (err) {
-      console.error("❌ Error fetching or storing RPS:", err);
-      return next(err);
-    }
-  };
-  
+    console.log(`✅ Stored traffic data for user: ${username}`);
 
-// Wiremock 
-
-export const trafficEndpoint: RequestHandler = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized: No user found" });
-      }
-  
-      const { username } = req.user;
-  
-      if (!username) {
-        return res
-          .status(400)
-          .json({ error: "Missing username in the request body" });
-      }
-  
-      const user = await User.findOne({ username });
-  
-      if (!user || !user.influxToken || !user.bucket) {
-        return res
-          .status(404)
-          .json({ error: "No influx credentials found for this user." });
-      }
-  
-      console.log(`Fetching traffic metrics from Prometheus for user: ${username}`);
-  
-      const prometheusUrl = "http://prometheus:9090/api/v1/query";
-      const query = `sum(rate(http_requests_total{job="express-api"}[1m])) by (route)`;
-  
-      const { data } = await axios.get(prometheusUrl, {
-        timeout: 5000,
-        params: { query: query },
-      });
-  
-      console.log("Prometheus raw response:", data);
-  
-      if (!data || data.status !== 'success' || !Array.isArray(data.data?.result) || data.data.result.length === 0) {
-        console.warn("No valid traffic data from Prometheus");
-        return res.status(404).json({ message: "No traffic data available from Prometheus" });
-      }
-  
-      const trafficData = data.data.result.map(entry => ({
-        endpoint: entry.metric.route,
-        traffic: parseFloat(entry.value[1])
-      }));
-  
-      const orgName = process.env.INFLUX_ORG || "MainOrg";
-      const writeApi = new InfluxDB({
-        url: process.env.INFLUX_URL || "http://influxdb:8086",
-        token: user.influxToken,
-      }).getWriteApi(orgName, user.bucket);
-  
-      trafficData.forEach(({ endpoint, traffic }) => {
-        const point = new Point("api_performance")
-          .tag("endpoint", endpoint)
-          .floatField("Traffic_endpoint", traffic);
-        writeApi.writePoint(point);
-      });
-  
-      await writeApi.flush();
-  
-      console.log(`✅ Stored traffic data for user: ${username}`);
-  
-      return res.json({
-        metric: "Traffic per Endpoint",
-        values: trafficData,
-        source: "Prometheus",
-        user: username,
-      });
-  
-    } catch (err) {
-      console.error("Error fetching or storing traffic data:", err);
-      return next(err);
-    }
-  };
-
+    return res.json({
+      metric: "Traffic per Endpoint",
+      values: trafficData,
+      source: "Prometheus",
+      user: username,
+    });
+  } catch (err) {
+    console.error("Error fetching or storing traffic data:", err);
+    return next(err);
+  }
+};

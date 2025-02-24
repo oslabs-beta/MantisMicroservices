@@ -4,16 +4,21 @@ import axios from "axios";
 import User from "../models/userModel";
 import { Point, InfluxDB } from "@influxdata/influxdb-client";
 
-export const p50Latency: RequestHandler = async (
+const wiremock_base = process.env.WIREMOCK_BASE || "http://wiremock:8080";
+
+// General function to fetch latency data from Prometheus and store it in InfluxDB
+const fectchAnStoreLatency = async (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
+  quantile: number
 ) => {
-  console.log("P50 Latency method in latency controller trigger");
   try {
+    console.log("Latency method in latency controller trigger");
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized: No user found" });
     }
+
     const { username } = req.user;
 
     if (!username) {
@@ -23,23 +28,44 @@ export const p50Latency: RequestHandler = async (
     }
 
     const user = await User.findOne({ username });
+
     if (!user || !user.influxToken || !user.bucket) {
       return res
         .status(404)
         .json({ error: "No Influx credentials found for this user." });
     }
 
-    console.log("Fetching metrics from Prometheus for user:", username);
+    const endpointQuery = req.query.endpoint as string;
+    const wiremockEndpoint = endpointQuery || "/default";
+    let wiremockData: any = null;
+
+    try {
+      const wiremockResponse = await axios.get(
+        `${wiremock_base}${wiremockEndpoint}`
+      );
+      wiremockData = wiremockResponse.data;
+    } catch (err) {
+      console.error(
+        `Error fetching wiremock data for endpoint: ${wiremockEndpoint}`,
+        err
+      );
+      wiremockData = { error: "Failed calling Wiremock" };
+    }
+
+    console.log(
+      `Fetching latency p${quantile * 100} from Prometheus for user:`,
+      username
+    );
+
     const prometheusUrl = "http://prometheus:9090/api/v1/query";
-    const query =
-      "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))";
+    const query = `histogram_quantile(${quantile}, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))`;
 
     const { data } = await axios.get(prometheusUrl, {
       timeout: 5000,
       params: { query: query },
     });
 
-    console.log("Prometheus raw response:", data);
+    console.log(`Prometheus raw response for p{$quantile * 100}:`, data);
 
     if (
       !data ||
@@ -47,14 +73,15 @@ export const p50Latency: RequestHandler = async (
       !Array.isArray(data.data?.result) ||
       data.data.result.length === 0
     ) {
-      console.warn("No valid latency p50 data from Prometheus.");
-      return res
-        .status(404)
-        .json({ message: "No latency p50 data available from Prometheus" });
+      console.warn(`No valid latency p${quantile * 100} data from Prometheus.`);
+      return res.status(404).json({
+        wiremockData: wiremockData,
+        message: `No latency p${quantile * 100} data available from Prometheus`,
+      });
     }
 
     const firstVal = data.data.result[0]?.value;
-    const p50 = firstVal ? parseFloat(firstVal[1]) : 0;
+    const latencyValue = firstVal ? parseFloat(firstVal[1]) : 0;
 
     const orgName = process.env.INFLUX_ORG || "MainOrg";
     const writeApi = new InfluxDB({
@@ -62,25 +89,42 @@ export const p50Latency: RequestHandler = async (
       token: user.influxToken,
     }).getWriteApi(orgName, user.bucket, "ms");
 
-    const point = new Point("p50_latency")
-      .tag("endpoint", "p50_latency")
-      .floatField("p50", p50);
+    const point = new Point(`p${quantile * 100}_latency`)
+      .tag("endpoint", wiremockEndpoint)
+      .floatField(`p${quantile * 100}`, latencyValue);
 
     writeApi.writePoint(point);
     await writeApi.flush();
 
-    console.log(`✅ Stored p50 latency data: ${p50} for user: ${username}`);
+    console.log(
+      `✅ Stored p${
+        quantile * 100
+      } latency data: ${latencyValue} for user: ${username}`
+    );
 
     return res.status(200).json({
-      metric: "p50_latency",
-      value: p50,
+      metric: `p${quantile * 100}_latency`,
+      wiremockData: wiremockData,
+      value: latencyValue,
       source: "Prometheus",
       user: username,
     });
   } catch (err) {
-    console.error("Error in p50Latency method in latency controller", err);
+    console.error(
+      `Error in latency p${quantile * 100} method in latency controller: `,
+      err
+    );
     return next(err);
   }
+};
+
+// Controllers to fetch and store latency data for different quantiles
+export const p50Latency: RequestHandler = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  fectchAnStoreLatency(req, res, next, 0.5);
 };
 
 export const p90Latency: RequestHandler = async (
@@ -88,78 +132,7 @@ export const p90Latency: RequestHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("P90 Latency method in latency controller trigger");
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized: No user found" });
-    }
-    const { username } = req.user;
-
-    if (!username) {
-      return res
-        .status(400)
-        .json({ error: "Missing 'username' in the request body." });
-    }
-
-    const user = await User.findOne({ username });
-    if (!user || !user.influxToken || !user.bucket) {
-      return res
-        .status(404)
-        .json({ error: "No Influx credentials found for this user." });
-    }
-
-    console.log("Fetching metrics from Prometheus for user:", username);
-    const prometheusUrl = "http://prometheus:9090/api/v1/query";
-    const query =
-      "histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))";
-
-    const { data } = await axios.get(prometheusUrl, {
-      timeout: 5000,
-      params: { query: query },
-    });
-
-    console.log("Prometheus raw response:", data);
-
-    if (
-      !data ||
-      data.status !== "success" ||
-      !Array.isArray(data.data?.result) ||
-      data.data.result.length === 0
-    ) {
-      console.warn("No valid latency p90 data from Prometheus.");
-      return res
-        .status(404)
-        .json({ message: "No latency p90 data available from Prometheus" });
-    }
-
-    const firstVal = data.data.result[0]?.value;
-    const p90 = firstVal ? parseFloat(firstVal[1]) : 0;
-
-    const orgName = process.env.INFLUX_ORG || "MainOrg";
-    const writeApi = new InfluxDB({
-      url: process.env.INFLUX_URL || "http://influxdb:8086",
-      token: user.influxToken,
-    }).getWriteApi(orgName, user.bucket, "ms");
-
-    const point = new Point("p90_latency")
-      .tag("endpoint", "p90_latency")
-      .floatField("p90", p90);
-
-    writeApi.writePoint(point);
-    await writeApi.flush();
-
-    console.log(`✅ Stored p90 latency data: ${p90} for user: ${username}`);
-
-    return res.json({
-      metric: "p90_latency",
-      value: p90,
-      source: "Prometheus",
-      user: username,
-    });
-  } catch (err) {
-    console.error("Error in p50Latency method in latency controller", err);
-    return next(err);
-  }
+  fectchAnStoreLatency(req, res, next, 0.9);
 };
 
 export const p99Latency: RequestHandler = async (
@@ -167,76 +140,5 @@ export const p99Latency: RequestHandler = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("P99 Latency method in latency controller trigger");
-  try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized: No user found" });
-    }
-    const { username } = req.user;
-
-    if (!username) {
-      return res
-        .status(400)
-        .json({ error: "Missing 'username' in the request body." });
-    }
-
-    const user = await User.findOne({ username });
-    if (!user || !user.influxToken || !user.bucket) {
-      return res
-        .status(404)
-        .json({ error: "No Influx credentials found for this user." });
-    }
-
-    console.log("Fetching metrics from Prometheus for user:", username);
-    const prometheusUrl = "http://prometheus:9090/api/v1/query";
-    const query =
-      "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))";
-
-    const { data } = await axios.get(prometheusUrl, {
-      timeout: 5000,
-      params: { query: query },
-    });
-
-    console.log("Prometheus raw response:", data);
-
-    if (
-      !data ||
-      data.status !== "success" ||
-      !Array.isArray(data.data?.result) ||
-      data.data.result.length === 0
-    ) {
-      console.warn("No valid latency p99 data from Prometheus.");
-      return res
-        .status(404)
-        .json({ message: "No latency p99 data available from Prometheus" });
-    }
-
-    const firstVal = data.data.result[0]?.value;
-    const p99 = firstVal ? parseFloat(firstVal[1]) : 0;
-
-    const orgName = process.env.INFLUX_ORG || "MainOrg";
-    const writeApi = new InfluxDB({
-      url: process.env.INFLUX_URL || "http://influxdb:8086",
-      token: user.influxToken,
-    }).getWriteApi(orgName, user.bucket, "ms");
-
-    const point = new Point("p99_latency")
-      .tag("endpoint", "p99_latency")
-      .floatField("p99", p99);
-
-    writeApi.writePoint(point);
-    await writeApi.flush();
-
-    console.log(`✅ Stored p99 latency data: ${p99} for user: ${username}`);
-
-    return res.json({
-      metric: "p99_latency",
-      value: p99,
-      source: "Prometheus",
-      user: username,
-    });
-  } catch (err) {
-    console.error("Error in p50Latency method in latency controller", err);
-    return next(err);
-  }
+  fectchAnStoreLatency(req, res, next, 0.99);
 };
