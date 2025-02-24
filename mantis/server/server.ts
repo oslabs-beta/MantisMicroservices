@@ -12,6 +12,7 @@ import {
 } from "./controllers/latencyController.ts";
 import { authMiddleware } from "./middleware/authMiddleware.ts";
 import { createNewUser, loginUser } from "./controllers/userController.ts";
+import { getEnpoints } from "./controllers/endpointsController.ts";
 import * as client from "prom-client";
 import connectDB from "./mongoConnection.ts";
 import cors from "cors";
@@ -40,7 +41,7 @@ const httpRequestDuration = new client.Histogram({
 
 app.use((req: UserPrometheus, res: Response, next: NextFunction) => {
   const stopTimer = httpRequestDuration.startTimer();
-  res.on('finish', () => {
+  res.on("finish", () => {
     stopTimer({
       method: req.method,
       route: req.route ? req.route.path : req.originalUrl,
@@ -56,6 +57,8 @@ app.get("/metrics", async (_req, res) => {
   res.end(await client.register.metrics());
 });
 
+
+
 app.get("/rps", authMiddleware, rpsController);
 app.get("/trafficEndpoint", authMiddleware, trafficEndpoint);
 app.get("/error4xx", authMiddleware, error4xx);
@@ -63,6 +66,9 @@ app.get("/error5xx", authMiddleware, error5xx);
 app.get("/latencyp50", authMiddleware, p50Latency);
 app.get("/latencyp90", authMiddleware, p90Latency);
 app.get("/latencyp99", authMiddleware, p99Latency);
+
+app.get("/endpoints", authMiddleware, getEnpoints);
+
 app.post("/create-user", createNewUser);
 app.post("/login", loginUser);
 

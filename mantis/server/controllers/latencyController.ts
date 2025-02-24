@@ -58,7 +58,10 @@ const fectchAnStoreLatency = async (
     );
 
     const prometheusUrl = "http://prometheus:9090/api/v1/query";
+    
+    // Query to get the latency data from Prometheus Globally
     const query = `histogram_quantile(${quantile}, sum(rate(http_request_duration_seconds_bucket[1m])) by (le))`;
+    // const query = `histogram_quantile(${quantile}, sum(rate(http_request_duration_seconds_bucket{route="${wiremockEndpoint}"}[1m])) by (le))`;
 
     const { data } = await axios.get(prometheusUrl, {
       timeout: 5000,
@@ -104,6 +107,7 @@ const fectchAnStoreLatency = async (
 
     return res.status(200).json({
       metric: `p${quantile * 100}_latency`,
+      wiremockEnpoint: wiremockEndpoint,
       wiremockData: wiremockData,
       value: latencyValue,
       source: "Prometheus",
