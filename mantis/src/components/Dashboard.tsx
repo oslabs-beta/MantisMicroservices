@@ -87,14 +87,15 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
 
   // Convert timeFrame to Flux-compatible time range
   const getTimeRange = () => {
+    // Default to last 3 days if no specific timeframe is selected
     switch (timeFrame) {
-      case '10m': return 'start: -10m';
-      case '1h': return 'start: -1h';
-      case '8h': return 'start: -8h';
-      case '16h': return 'start: -16h';
-      case '1d': return 'start: -1d';
-      case '1w': return 'start: -1w';
-      default: return 'start: -1h';
+      // case '10m': return 'start: -10m';
+      // case '1h': return 'start: -1h';
+      // case '8h': return 'start: -8h';
+      // case '16h': return 'start: -16h';
+      // case '1d': return 'start: -1d';
+      // case '1w': return 'start: -1w';
+      default: return 'start: -3d'; // Default to 3 days
     }
   };
 
@@ -116,6 +117,8 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
       &var-field=${encodeURIComponent(field)}
       &var-measurement=${encodeURIComponent(measurement)}
       &var-timeRange=${encodeURIComponent(getTimeRange())}
+      &from=now-3d
+      &to=now
       &panelId=${panelId}
       &refresh=5s`;
   };
