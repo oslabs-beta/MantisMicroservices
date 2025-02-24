@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 const SALT_WORK_FACTOR = 10;
 
 const userSchema = new mongoose.Schema<IUser>({
+  email: {type: String, required: true, unique: true},
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   influxToken: { type: String, required: true },

@@ -24,6 +24,7 @@ export type ServerError = {
 // }
 
 export interface IUser extends Document {
+  email: string;
   username: string;
   password: string;
   influxToken: string;

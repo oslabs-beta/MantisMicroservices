@@ -23,9 +23,9 @@ const authApi = new AuthorizationsAPI(influxDB);
 
 export const createNewUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { username, password } = req.body;
+      const { email, username, password } = req.body;
 
-      if (!username || !password) {
+      if (!email || !username || !password) {
         console.error("Username or Password missing");
         next();
       }
@@ -68,6 +68,7 @@ export const createNewUser: RequestHandler = async (req: Request, res: Response,
       const userToken = newAuth.token;
 
       const user: IUser = new User({
+        email,
         username,
         password,
         influxToken: userToken,
@@ -78,6 +79,7 @@ export const createNewUser: RequestHandler = async (req: Request, res: Response,
       return res.status(200).json({
         message: "User created succesfully",
         username,
+        email,
         bucket: bucketName,
         influxToken: userToken,
       });
@@ -89,15 +91,15 @@ export const createNewUser: RequestHandler = async (req: Request, res: Response,
 
 export const loginUser: RequestHandler  = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { username, password } = req.body;
-        if (!username || !password) {
+        const { email, password } = req.body;
+        if (!email || !password) {
           return res
             .status(400)
             .json({ error: "Username and password are required." });
         }
   
         // Look up the user in Mongo
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ email });
         if (!user) {
           return res.status(401).json({ error: "Invalid username or password." });
         }
@@ -121,6 +123,9 @@ export const loginUser: RequestHandler  = async (req: Request, res: Response, ne
           user: {
             _id: user._id,
             username: user.username,
+            email: user.email,
+            bucket: user.bucket,
+
             // any additional user fields you want to return
           },
         });
