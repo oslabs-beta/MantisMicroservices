@@ -6,6 +6,9 @@ interface LoggedInUser {
   _id: string;
   username: string;
   token: string;
+  influxToken: string;
+  bucket: string;
+  email?: string;
 }
 
 interface LoginProps {
@@ -52,7 +55,6 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         return;
       }
       const data = await response.json();
-      // data should look like { message, token, user: { _id, username } }
       alert('Login successful!');
       
       // Notify parent of successful login, if callback provided
@@ -60,7 +62,10 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         onLoginSuccess({
           _id: data.user._id,
           username: data.user.username,
+          email: data.user.email,
           token: data.token,
+          influxToken: data.user.influxToken,
+          bucket: data.user.bucket
         });
       }
       

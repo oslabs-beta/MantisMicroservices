@@ -15,12 +15,48 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const [viewType, setViewType] = useState('overview');
-  const [timeFrame, setTimeFrame] = useState('1h'); // Make sure this is acceptable to Grafana
+  const [timeFrame, setTimeFrame] = useState('1h');
   const [queryType, setQueryType] = useState('P50');
   const [activeTab, setActiveTab] = useState(0);
+  const [endpoints, setEndpoints] = useState<string[]>([]);
+  const [selectedEndpoint, setSelectedEndpoint] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Replace the manual bucket construction with the actual bucket from user data
+  // Use the bucket from user data
   const userBucket = loggedInUser.bucket;
+
+  // Fetch available endpoints when the component mounts
+  useEffect(() => {
+    const fetchEndpoints = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('http://localhost:3001/endpoints', {
+          headers: {
+            'Authorization': `Bearer ${loggedInUser.token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch endpoints: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        setEndpoints(data.endpoints);
+        if (data.endpoints.length > 0) {
+          setSelectedEndpoint(data.endpoints[0]); // Select the first endpoint by default
+        }
+      } catch (err) {
+        console.error('Error fetching endpoints:', err);
+        setError('Failed to load endpoints. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEndpoints();
+  }, [loggedInUser.token]);
 
   // Tab labels
   const tabData = [
@@ -34,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     { label: 'Traffic per endpoint' },
   ];
 
-  // Update viewType and active tab on tab change.
+  // Update viewType and active tab on tab change
   const handleTabChange = (index: number) => {
     if (tabData[index].label === 'Overview') {
       setViewType('overview');
@@ -50,9 +86,12 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     setTimeFrame(time);
   };
 
-  // Build the Grafana URL. 
-  // Make sure that your Grafana dashboard uses a variable named "bucket"
-  // and that the Flux queries refer to it via: from(bucket: "${bucket}")
+  // Handle endpoint selection
+  const handleEndpointChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedEndpoint(e.target.value);
+  };
+
+  // Build the Grafana URL with all required variables
   const grafanaUrl = `http://localhost:3000/d-solo/${
     viewType === 'overview'
       ? 'becykw30pefpce/testing-grafana-with-volume'
@@ -60,9 +99,12 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   }
   ?orgId=1
   &timezone=browser
-  &var-bucket=${userBucket}               /* Pass the dynamic bucket variable */
+  &var-bucket=${userBucket}
+  &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
+  &var-field=_field
+  &var-measurement=_measurement
   &panelId=${activeTab + 1}
-  &from=${timeFrame}                      /* Ensure this time format is valid */
+  &from=${timeFrame}
   &to=now
   &queryType=${queryType}
   &__feature.dashboardSceneSolo`;
@@ -78,13 +120,53 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
         METRICS
       </h1>
 
-      {/* Timeframe selector */}
-      <div>
-        {['10m', '1h', '8h', '16h', '1d', '1w'].map((tf) => (
-          <button key={tf} onClick={() => handleTimeFrame(tf)}>
-            {tf}
-          </button>
-        ))}
+      {/* Controls row with timeframe and endpoint selectors */}
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+        {/* Timeframe selector */}
+        <div className="flex items-center">
+          <span className="mr-2 font-medium">Time Range:</span>
+          <div className="flex space-x-1">
+            {['10m', '1h', '8h', '16h', '1d', '1w'].map((tf) => (
+              <button 
+                key={tf} 
+                onClick={() => handleTimeFrame(tf)}
+                className={`px-3 py-1 rounded-md text-sm ${
+                  timeFrame === tf 
+                    ? 'bg-emerald-600 text-white' 
+                    : 'bg-gray-200 hover:bg-gray-300'
+                }`}
+              >
+                {tf}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Endpoint selector */}
+        <div className="flex items-center">
+          <span className="mr-2 font-medium">Endpoint:</span>
+          {isLoading ? (
+            <span>Loading endpoints...</span>
+          ) : error ? (
+            <span className="text-red-500">{error}</span>
+          ) : (
+            <select 
+              value={selectedEndpoint} 
+              onChange={handleEndpointChange}
+              className="border border-gray-300 rounded-md px-3 py-1"
+            >
+              {endpoints.length === 0 ? (
+                <option>No endpoints available</option>
+              ) : (
+                endpoints.map((endpoint) => (
+                  <option key={endpoint} value={endpoint}>
+                    {endpoint}
+                  </option>
+                ))
+              )}
+            </select>
+          )}
+        </div>
       </div>
 
       <Tabs tabs={tabData} activeTab={activeTab} onTabChange={handleTabChange} />
@@ -118,7 +200,6 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
 };
 
 export default Dashboard;
-;
 
 
 
