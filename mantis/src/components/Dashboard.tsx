@@ -14,13 +14,14 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
-  const [viewType, setViewType] = useState('overview');
+  const [viewType, setViewType] = useState('Overview');
   const [timeFrame, setTimeFrame] = useState('1h');
   const [activeTab, setActiveTab] = useState(0);
   const [endpoints, setEndpoints] = useState<string[]>([]);
   const [selectedEndpoint, setSelectedEndpoint] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0); // Force refresh of iframes
 
   // Use the bucket from user data
   const userBucket = loggedInUser.bucket;
@@ -73,29 +74,31 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const handleTabChange = (index: number) => {
     setActiveTab(index);
     setViewType(tabData[index].label);
+    setRefreshKey(prev => prev + 1); // Force iframe refresh
   };
 
   // Update time frame
   const handleTimeFrame = (time: string) => {
     setTimeFrame(time);
+    setRefreshKey(prev => prev + 1); // Force iframe refresh
   };
 
   // Handle endpoint selection
   const handleEndpointChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedEndpoint(e.target.value);
+    setRefreshKey(prev => prev + 1); // Force iframe refresh
   };
 
-  // Convert timeFrame to Flux-compatible time range
-  const getTimeRange = () => {
-    // Default to last 3 days if no specific timeframe is selected
+  // Get from and to time parameters based on selected timeFrame
+  const getTimeParams = () => {
     switch (timeFrame) {
-      // case '10m': return 'start: -10m';
-      // case '1h': return 'start: -1h';
-      // case '8h': return 'start: -8h';
-      // case '16h': return 'start: -16h';
-      // case '1d': return 'start: -1d';
-      // case '1w': return 'start: -1w';
-      default: return 'start: -3d'; // Default to 3 days
+      case '10m': return { from: 'now-10m', to: 'now' };
+      case '1h': return { from: 'now-1h', to: 'now' };
+      case '8h': return { from: 'now-8h', to: 'now' };
+      case '16h': return { from: 'now-16h', to: 'now' };
+      case '1d': return { from: 'now-1d', to: 'now' };
+      case '1w': return { from: 'now-1w', to: 'now' };
+      default: return { from: 'now-3d', to: 'now' };
     }
   };
 
@@ -109,19 +112,30 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     const measurement = currentTab.measurement || '';
     const field = currentTab.field || '';
     
+    // Get time parameters
+    const { from, to } = getTimeParams();
+    
     // Build the URL with all necessary parameters
     return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
-      &timezone=browser
+      &timezone=utc
       &var-bucket=${encodeURIComponent(userBucket)}
       &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
       &var-field=${encodeURIComponent(field)}
       &var-measurement=${encodeURIComponent(measurement)}
-      &var-timeRange=${encodeURIComponent(getTimeRange())}
-      &from=now-3d
-      &to=now
-      &panelId=${panelId}
-      &refresh=5s`;
+      &from=${from}
+      &to=${to}
+      &panelId=${panelId}`;
   };
+
+  // Log current state for debugging
+  useEffect(() => {
+    console.log("Current state:", {
+      timeFrame,
+      selectedEndpoint,
+      activeTab,
+      viewType
+    });
+  }, [timeFrame, selectedEndpoint, activeTab, viewType]);
 
   return (
     <div>
@@ -186,7 +200,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
           <div className="grid grid-cols-2 gap-3 max-h-[600px]">
             {[1, 2, 3, 4].map((panel) => (
               <iframe
-                key={panel}
+                key={`${panel}-${refreshKey}`}
                 src={buildGrafanaUrl(panel)}
                 className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
                 title={`overview-panel-${panel}`}
@@ -199,6 +213,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
           // Single panel for other views
           <div className="flex justify-center">
             <iframe
+              key={`panel-${activeTab}-${refreshKey}`}
               src={buildGrafanaUrl(activeTab + 1)}
               className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
               title={`${viewType}-panel`}
