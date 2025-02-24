@@ -16,7 +16,6 @@ interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const [viewType, setViewType] = useState('overview');
   const [timeFrame, setTimeFrame] = useState('1h');
-  const [queryType, setQueryType] = useState('P50');
   const [activeTab, setActiveTab] = useState(0);
   const [endpoints, setEndpoints] = useState<string[]>([]);
   const [selectedEndpoint, setSelectedEndpoint] = useState('');
@@ -58,27 +57,22 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     fetchEndpoints();
   }, [loggedInUser.token]);
 
-  // Tab labels
+  // Tab data with corresponding measurement values
   const tabData = [
-    { label: 'Overview' },
-    { label: 'P50' },
-    { label: 'P90' },
-    { label: 'P99' },
-    { label: 'Error Rate 500' },
-    { label: 'Error Rate 400' },
-    { label: 'Requests per second' },
-    { label: 'Traffic per endpoint' },
+    { label: 'Overview', measurement: '' },
+    { label: 'P50', measurement: 'p50_latency', field: 'p50' },
+    { label: 'P90', measurement: 'p90_latency', field: 'p90' },
+    { label: 'P99', measurement: 'p99_latency', field: 'p99' },
+    { label: 'Error Rate 500', measurement: 'error_5xx', field: 'count' },
+    { label: 'Error Rate 400', measurement: 'error_4xx', field: 'count' },
+    { label: 'Requests per second', measurement: 'rps', field: 'rps' },
+    { label: 'Traffic per endpoint', measurement: 'traffic', field: 'count' },
   ];
 
   // Update viewType and active tab on tab change
   const handleTabChange = (index: number) => {
-    if (tabData[index].label === 'Overview') {
-      setViewType('overview');
-    } else {
-      setViewType(tabData[index].label);
-    }
     setActiveTab(index);
-    setQueryType(tabData[index].label);
+    setViewType(tabData[index].label);
   };
 
   // Update time frame
@@ -91,28 +85,40 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     setSelectedEndpoint(e.target.value);
   };
 
-  // Build the Grafana URL with all required variables
-  const grafanaUrl = `http://localhost:3000/d-solo/${
-    viewType === 'overview'
-      ? 'becykw30pefpce/testing-grafana-with-volume'
-      : 'becykw30pefpce/testing-grafana-with-volume'
-  }
-  ?orgId=1
-  &timezone=browser
-  &var-bucket=${userBucket}
-  &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
-  &var-field=_field
-  &var-measurement=_measurement
-  &panelId=${activeTab + 1}
-  &from=${timeFrame}
-  &to=now
-  &queryType=${queryType}
-  &__feature.dashboardSceneSolo`;
+  // Convert timeFrame to Flux-compatible time range
+  const getTimeRange = () => {
+    switch (timeFrame) {
+      case '10m': return 'start: -10m';
+      case '1h': return 'start: -1h';
+      case '8h': return 'start: -8h';
+      case '16h': return 'start: -16h';
+      case '1d': return 'start: -1d';
+      case '1w': return 'start: -1w';
+      default: return 'start: -1h';
+    }
+  };
 
-  // Log the URL for debugging
-  useEffect(() => {
-    console.log("Constructed Grafana URL:", grafanaUrl);
-  }, [grafanaUrl]);
+  // Build the Grafana URL with all required variables
+  const buildGrafanaUrl = (panelId: number) => {
+    const dashboardId = 'becykw30pefpce';
+    const dashboardName = 'testing-grafana-with-volume';
+    
+    // Get the current tab's measurement and field
+    const currentTab = tabData[activeTab];
+    const measurement = currentTab.measurement || '';
+    const field = currentTab.field || '';
+    
+    // Build the URL with all necessary parameters
+    return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
+      &timezone=browser
+      &var-bucket=${encodeURIComponent(userBucket)}
+      &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
+      &var-field=${encodeURIComponent(field)}
+      &var-measurement=${encodeURIComponent(measurement)}
+      &var-timeRange=${encodeURIComponent(getTimeRange())}
+      &panelId=${panelId}
+      &refresh=5s`;
+  };
 
   return (
     <div>
@@ -172,15 +178,17 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
       <Tabs tabs={tabData} activeTab={activeTab} onTabChange={handleTabChange} />
 
       <div className="grafana-panels overflow-auto p-3 border-2 border-neutral-950 bg-[#A3CD9A] shadow-xl rounded-2xl">
-        {viewType === 'overview' ? (
+        {viewType === 'Overview' ? (
           // Show multiple panels for overview
           <div className="grid grid-cols-2 gap-3 max-h-[600px]">
             {[1, 2, 3, 4].map((panel) => (
               <iframe
                 key={panel}
-                src={`${grafanaUrl}&panelId=${panel}`}
+                src={buildGrafanaUrl(panel)}
                 className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
                 title={`overview-panel-${panel}`}
+                frameBorder="0"
+                allowFullScreen
               ></iframe>
             ))}
           </div>
@@ -188,9 +196,11 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
           // Single panel for other views
           <div className="flex justify-center">
             <iframe
-              src={grafanaUrl}
+              src={buildGrafanaUrl(activeTab + 1)}
               className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
-              title={`${queryType}-panel`}
+              title={`${viewType}-panel`}
+              frameBorder="0"
+              allowFullScreen
             ></iframe>
           </div>
         )}
