@@ -7,6 +7,7 @@ import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 import Documentation from './components/Documentation';
 import LoginPage from './components/LoginPage'; // Your updated login component
+import RegisterPage from './components/RegisterPage';
 
 // A TypeScript interface for the logged-in user
 interface LoggedInUser {
@@ -56,6 +57,9 @@ function App() {
               )
             }
           />
+
+          {/* 4) The Register Route */}
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Fallback or 404 could go here if desired */}
           {/* <Route path="*" element={<NotFound />} /> */}

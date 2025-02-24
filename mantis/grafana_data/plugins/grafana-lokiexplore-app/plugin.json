@@ -13,17 +13,24 @@
   "extensions": {
     "addedLinks": [
       {
-        "description": "Open current query in the Explore Logs view",
+        "description": "Open current query in the Grafana Logs Drilldown view",
         "targets": [
           "grafana/dashboard/panel/menu",
           "grafana/explore/toolbar/action"
         ],
-        "title": "Open in Explore Logs"
+        "title": "Open in Grafana Logs Drilldown"
+      }
+    ],
+    "exposedComponents": [
+      {
+        "description": "A button that opens a logs view in the Explore Logs app.",
+        "id": "grafana-lokiexplore-app/open-in-explore-logs-button/v1",
+        "title": "Open in Explore Logs button"
       }
     ],
     "extensionPoints": [
       {
-        "id": "grafana-lokiexplore-app/metric-exploration/v1"
+        "id": "grafana-lokiexplore-app/investigation/v1"
       },
       {
         "id": "grafana-lokiexplore-app/toolbar-open-related/v1",
@@ -37,7 +44,7 @@
       "action": "datasources:explore",
       "addToNav": true,
       "defaultNav": true,
-      "name": "Logs",
+      "name": "Grafana Logs Drilldown",
       "path": "/a/grafana-lokiexplore-app/explore",
       "type": "page"
     }
@@ -47,18 +54,22 @@
       "name": "Grafana"
     },
     "build": {
-      "time": 1739381355747,
-      "repo": "https://github.com/grafana/explore-logs",
+      "time": 1740134020946,
+      "repo": "https://github.com/grafana/logs-drilldown",
       "branch": "main",
-      "hash": "133261972c66fc4f132945d591bf33dc0445b9b0",
-      "build": 1758
+      "hash": "84cc8e7106244c4c8817587c5faa779aec20d025",
+      "build": 1855
     },
     "description": "Query-less exploration of log data stored in Loki",
     "keywords": [
       "app",
       "loki",
       "explore",
-      "logs"
+      "logs",
+      "drilldown",
+      "drill",
+      "down",
+      "drill-down"
     ],
     "links": [
       {
@@ -88,10 +99,10 @@
         "path": "img/table.png"
       }
     ],
-    "updated": "2025-02-12",
-    "version": "1.0.7"
+    "updated": "2025-02-21",
+    "version": "1.0.8"
   },
-  "name": "Explore Logs",
+  "name": "Grafana Logs Drilldown",
   "preload": true,
   "roles": [],
   "type": "app"

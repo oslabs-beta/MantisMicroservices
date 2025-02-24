@@ -29,7 +29,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   // Dummy "navigate to register" function
   const handleRegister = () => {
-    alert('Navigate to Registration Page');
+    navigate('/register');
   };
 
   // The real fetch logic for /login with automatic redirection on success
@@ -44,7 +44,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const response = await fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({ email: email, password }),
       });
 
       if (!response.ok) {

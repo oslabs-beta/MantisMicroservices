@@ -5,6 +5,8 @@ interface LoggedInUser {
   _id: string;
   username: string;
   token: string;
+  influxToken: string;
+  bucket: string;
 }
 
 interface DashboardProps {
@@ -17,8 +19,8 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const [queryType, setQueryType] = useState('P50');
   const [activeTab, setActiveTab] = useState(0);
 
-  // Construct the bucket name from the logged-in user's username.
-  const userBucket = `bucket_${loggedInUser.username}`;
+  // Replace the manual bucket construction with the actual bucket from user data
+  const userBucket = loggedInUser.bucket;
 
   // Tab labels
   const tabData = [
