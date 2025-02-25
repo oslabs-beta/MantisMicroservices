@@ -10,7 +10,7 @@ interface LoggedInUser {
 }
 
 interface DashboardProps {
-  loggedInUser: LoggedInUser;
+  loggedInUser?: LoggedInUser;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
@@ -22,6 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0); // Force refresh of iframes
+  const [showDetailTabs, setShowDetailTabs] = useState(false);
 
   // Use the bucket from user data
   const userBucket = loggedInUser.bucket;
@@ -123,113 +124,117 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     }
   };
 
+  const toggleDetailTabs = () => {
+    setShowDetailTabs(!showDetailTabs);
+  };
+
   return (
-    <div>
-      <h1 className="text-left text-emerald-950 tracking-widest ml-1 mb-1 font-semibold">
-        METRICS
-      </h1>
+    <div className="dashboard-container relative">
+      {/* Animated background */}
+      <div className="wave-background absolute inset-0 overflow-hidden -z-10">
+        <div className="wave wave1"></div>
+        <div className="wave wave2"></div>
+        <div className="wave wave3"></div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 py-6 relative z-10">
+        {/* Custom tab navigation with Overview and Details buttons */}
+        <div className="flex mb-4 items-center">
+          <button
+            onClick={() => {
+              handleTabChange(0);
+              setShowDetailTabs(false);
+            }}
+            className={`px-4 py-2 rounded-md mr-2 ${
+              activeTab === 0
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={toggleDetailTabs}
+            className={`px-4 py-2 rounded-md mr-3 ${
+              showDetailTabs
+                ? 'bg-emerald-500 text-white shadow-lg'
+                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
+            }`}
+          >
+            Details
+          </button>
 
-      {/* Controls row with timeframe and endpoint selectors */}
-      <div className="mb-4 flex flex-wrap items-center gap-4">
-        {/* Timeframe selector */}
-        <div className="flex items-center">
-          <span className="mr-2 font-medium">Time Range:</span>
-          <div className="flex space-x-1">
-            {['10m', '1h', '8h', '16h', '1d', '1w'].map((tf) => (
-              <button 
-                key={tf} 
-                onClick={() => handleTimeFrame(tf)}
-                className={`px-3 py-1 rounded-md text-sm ${
-                  timeFrame === tf 
-                    ? 'bg-emerald-600 text-white' 
-                    : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-              >
-                {tf}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Endpoint selector */}
-        <div className="flex items-center">
-          <span className="mr-2 font-medium">Endpoint:</span>
-          {isLoading ? (
-            <span>Loading endpoints...</span>
-          ) : error ? (
-            <span className="text-red-500">{error}</span>
-          ) : (
-            <select 
-              value={selectedEndpoint} 
-              onChange={handleEndpointChange}
-              className="border border-gray-300 rounded-md px-3 py-1"
-            >
-              {endpoints.length === 0 ? (
-                <option>No endpoints available</option>
-              ) : (
-                endpoints.map((endpoint) => (
-                  <option key={endpoint} value={endpoint}>
-                    {endpoint}
-                  </option>
-                ))
-              )}
-            </select>
+          {/* Show detailed tabs on the same line when Details is clicked */}
+          {showDetailTabs && (
+            <div className="flex flex-wrap gap-1">
+              {tabData.slice(1).map((tab, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleTabChange(idx + 1)}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    activeTab === idx + 1
+                      ? 'bg-emerald-400 text-white shadow-md'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-      </div>
 
-      <Tabs tabs={tabData} activeTab={activeTab} onTabChange={handleTabChange} />
-
-      <div className="grafana-panels overflow-auto p-3 border-2 border-neutral-950 bg-[#A3CD9A] shadow-xl rounded-2xl">
-        {viewType === 'Overview' ? (
-          // Show multiple panels for overview
-          <div className="grid grid-cols-2 gap-3 max-h-[600px]">
-            <iframe
-              key={`latency-${refreshKey}`}
-              src={iframeUrls.overview.latency}
-              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
-              title="Latency Overview"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-            <iframe
-              key={`errors-${refreshKey}`}
-              src={iframeUrls.overview.errors}
-              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
-              title="Errors Overview"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-            <iframe
-              key={`rps-${refreshKey}`}
-              src={iframeUrls.overview.rps}
-              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
-              title="RPS Overview"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-            <iframe
-              key={`traffic-${refreshKey}`}
-              src={iframeUrls.overview.traffic}
-              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
-              title="Traffic Overview"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          </div>
-        ) : (
-          // Single panel for other views
-          <div className="flex justify-center">
-            <iframe
-              key={`panel-${activeTab}-${refreshKey}`}
-              src={getIframeUrl()}
-              className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
-              title={`${viewType}-panel`}
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          </div>
-        )}
+        <div className="grafana-panels overflow-auto p-4 border border-gray-700 bg-gray-900 bg-opacity-80 shadow-lg rounded-lg">
+          {viewType === 'Overview' ? (
+            // Show multiple panels for overview with improved spacing
+            <div className="grid grid-cols-2 gap-6 max-h-[700px]">
+              <iframe
+                key={`latency-${refreshKey}`}
+                src={iframeUrls.overview.latency}
+                className="w-full h-auto min-w-[275px] min-h-[300px] max-w-[600px] max-h-[600px] aspect-video"
+                title="Latency Overview"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              <iframe
+                key={`errors-${refreshKey}`}
+                src={iframeUrls.overview.errors}
+                className="w-full h-auto min-w-[275px] min-h-[300px] max-w-[600px] max-h-[600px] aspect-video"
+                title="Errors Overview"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              <iframe
+                key={`rps-${refreshKey}`}
+                src={iframeUrls.overview.rps}
+                className="w-full h-auto min-w-[275px] min-h-[300px] max-w-[600px] max-h-[600px] aspect-video"
+                title="RPS Overview"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              <iframe
+                key={`traffic-${refreshKey}`}
+                src={iframeUrls.overview.traffic}
+                className="w-full h-auto min-w-[275px] min-h-[300px] max-w-[600px] max-h-[600px] aspect-video"
+                title="Traffic Overview"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+            </div>
+          ) : (
+            // Single panel for other views
+            <div className="flex justify-center">
+              <iframe
+                key={`panel-${activeTab}-${refreshKey}`}
+                src={getIframeUrl()}
+                className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
+                title={`${viewType}-panel`}
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
