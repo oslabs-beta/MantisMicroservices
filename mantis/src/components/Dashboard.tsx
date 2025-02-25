@@ -102,39 +102,39 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     }
   };
 
-  // Build the Grafana URL with all required variables
-  const buildGrafanaUrl = (panelId: number) => {
-    const dashboardId = 'becykw30pefpce';
-    const dashboardName = 'testing-grafana-with-volume';
+  // // Build the Grafana URL with all required variables
+  // const buildGrafanaUrl = (panelId: number) => {
+  //   const dashboardId = 'becykw30pefpce';
+  //   const dashboardName = 'testing-grafana-with-volume';
     
-    // Get the current tab's measurement and field
-    const currentTab = tabData[activeTab];
-    const measurement = currentTab.measurement || '';
-    const field = currentTab.field || '';
+  //   // Get the current tab's measurement and field
+  //   const currentTab = tabData[activeTab];
+  //   const measurement = currentTab.measurement || '';
+  //   const field = currentTab.field || '';
     
-    // Get time parameters
-    const { from, to } = getTimeParams();
+  //   // Get time parameters
+  //   const { from, to } = getTimeParams();
     
-    // Build the URL with all necessary parameters - removing timezone
-    return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
-      &var-bucket=${encodeURIComponent(userBucket)}
-      &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
-      &var-field=${encodeURIComponent(field)}
-      &var-measurement=${encodeURIComponent(measurement)}
-      &from=${from}
-      &to=${to}
-      &panelId=${panelId}`;
-  };
+  //   // Build the URL with all necessary parameters - removing timezone
+  //   return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
+  //     &var-bucket=${encodeURIComponent(userBucket)}
+  //     &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
+  //     &var-field=${encodeURIComponent(field)}
+  //     &var-measurement=${encodeURIComponent(measurement)}
+  //     &from=${from}
+  //     &to=${to}
+  //     &panelId=${panelId}`;
+  // };
 
-  // Log current state for debugging
-  useEffect(() => {
-    console.log("Current state:", {
-      timeFrame,
-      selectedEndpoint,
-      activeTab,
-      viewType
-    });
-  }, [timeFrame, selectedEndpoint, activeTab, viewType]);
+  // // Log current state for debugging
+  // useEffect(() => {
+  //   console.log("Current state:", {
+  //     timeFrame,
+  //     selectedEndpoint,
+  //     activeTab,
+  //     viewType
+  //   });
+  // }, [timeFrame, selectedEndpoint, activeTab, viewType]);
 
   return (
     <div>
@@ -200,7 +200,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
             {[1, 2, 3, 4].map((panel) => (
               <iframe
                 key={`${panel}-${refreshKey}`}
-                src={buildGrafanaUrl(panel)}
+                src="http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p90_latency&var-query0=&var-field=p90&editIndex=3&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo" 
                 className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
                 title={`overview-panel-${panel}`}
                 frameBorder="0"
@@ -213,7 +213,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
           <div className="flex justify-center">
             <iframe
               key={`panel-${activeTab}-${refreshKey}`}
-              src={buildGrafanaUrl(activeTab + 1)}
+              src="http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p50_latency&var-query0=&var-field=p50&editIndex=3&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo"
               className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
               title={`${viewType}-panel`}
               frameBorder="0"
