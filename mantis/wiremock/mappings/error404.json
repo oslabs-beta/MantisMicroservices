@@ -1,0 +1,15 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/test404"
+    },
+    "response": {
+      "status": 404,
+      "jsonBody": {
+        "error": "404 Not Found"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+}

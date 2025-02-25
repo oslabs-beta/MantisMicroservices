@@ -1,0 +1,15 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/test401"
+    },
+    "response": {
+      "status": 401,
+      "jsonBody": {
+        "error": "401 Unauthorized"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+}

@@ -24,6 +24,24 @@ export const options = {
       exec: "testLatencyEndpoint",
       tags: { scenario: "latency" },
     },
+
+    error4xxScenario: {
+      executor: "constant-vus",
+      vus: 10,
+      duration: "30s",
+      exec: "testError4xxEndpoint",
+      tags: { scenario: "error4xx" },
+    },
+
+    // error5xxScenario: {
+    //   executor: "constant-vus",
+    //   vus: 10,
+    //   duration: "30s",
+    //   exec: "testError5xxEndpoint",
+    //   tags: { scenario: "error5xx" },
+    // },
+
+    
   },
 };
 
@@ -91,3 +109,84 @@ export function testLatencyEndpoint() {
   sleep(1);
 }
 
+export function testError4xx(error, params) {
+  // pick user based on VU number
+  const user = users[__VU % users.length];
+
+  // login
+  const loginRes = http.post(
+    "http://express-api:3001/login",
+    JSON.stringify(user),
+    { headers: { "Content-Type": "application/json" } }
+  );
+  check(loginRes, { "login successful": (r) => r.status === 200 });
+
+  const token = loginRes.json("token");
+  if (token) {
+    // call /rps
+    for (let i = 0; i < params; i++) {
+      const res = http.get(
+        `http://express-api:3001/error4xx?endpoint=test${error}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      check(res, {
+        "4xx request triggered": (r) => r.status >= 400 && r.status < 500,
+      });
+    }
+
+    sleep(1); // wait 1s before next iteration
+  }
+}
+
+export function testError4xxEndpoint() {
+  testError4xx(400, 2);
+  testError4xx(401, 6);
+  testError4xx(403, 4);
+  testError4xx(404, 5);
+  testError4xx(405, 3);
+
+  sleep(1);
+}
+
+
+
+// export function testError5xx(error, params) {
+//   // pick user based on VU number
+//   const user = users[__VU % users.length];
+
+//   // login
+//   const loginRes = http.post(
+//     "http://express-api:3001/login",
+//     JSON.stringify(user),
+//     { headers: { "Content-Type": "application/json" } }
+//   );
+//   check(loginRes, { "login successful": (r) => r.status === 200 });
+
+//   const token = loginRes.json("token");
+//   if (token) {
+//     // call /rps
+//     for (let i = 0; i < params; i++) {
+//       const res = http.get(
+//         `http://express-api:3001/error5xx?endpoint=/test${error}`,
+//         { headers: { Authorization: `Bearer ${token}` } }
+//       );
+
+//       check(res, {
+//         "4xx request triggered": (r) => r.status >= 400 && r.status < 500,
+//       });
+//     }
+
+//     sleep(1); // wait 1s before next iteration
+//   }
+// }
+
+// export function testError5xxEndpoint() {
+//   testError4xx(500, 2);
+//   testError4xx(501, 6);
+//   testError4xx(502, 4);
+//   testError4xx(503, 5);
+//   testError4xx(504, 3);
+
+//   sleep(1);
+// }

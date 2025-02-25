@@ -1,0 +1,15 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/test403"
+    },
+    "response": {
+      "status": 403,
+      "jsonBody": {
+        "error": "403 Forbidden"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+}

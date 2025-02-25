@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/test405"
+  },
+  "response": {
+    "status": 405,
+    "jsonBody": {
+      "error": "405 Method Not Allowed"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -4,7 +4,7 @@ import {
   rpsController,
   trafficEndpoint,
 } from "./controllers/trafficController.ts";
-import { error4xx, error5xx } from "./controllers/errorsController.ts";
+import { error4xx } from "./controllers/errorsController.ts";
 import {
   p50Latency,
   p90Latency,
@@ -62,7 +62,7 @@ app.get("/metrics", async (_req, res) => {
 app.get("/rps", authMiddleware, rpsController);
 app.get("/trafficEndpoint", authMiddleware, trafficEndpoint);
 app.get("/error4xx", authMiddleware, error4xx);
-app.get("/error5xx", authMiddleware, error5xx);
+// app.get("/error5xx", authMiddleware, error5xx);
 app.get("/latencyp50", authMiddleware, p50Latency);
 app.get("/latencyp90", authMiddleware, p90Latency);
 app.get("/latencyp99", authMiddleware, p99Latency);

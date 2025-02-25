@@ -1,0 +1,15 @@
+{
+    "request": {
+      "method": "GET",
+      "url": "/createUser"
+    },
+    "response": {
+      "status": 400,
+      "jsonBody": {
+        "error": "Bad Request"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      }
+    }
+}
