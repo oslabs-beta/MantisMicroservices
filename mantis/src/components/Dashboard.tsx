@@ -95,16 +95,16 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     // Overview panel iframes
     overview: {
       latency: "http://localhost:3000/d-solo/dee5d7b3eom4ge/new-dashboard?orgId=1&timezone=browser&var-query0=&editIndex=0&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
-      errors: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_5xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
+      errors: "http://localhost:3000/d-solo/bee5sivy2wfeod/errors4xx?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
       rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
       traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true"
     },
     // Individual tab iframes
-    p50: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p50_latency&var-field=p50&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
-    p90: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p90_latency&var-field=p90&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
-    p99: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p99_latency&var-field=p99&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
+    p50: "http://localhost:3000/d-solo/eee62wn5v4glca/p50?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
+    p90: "http://localhost:3000/d-solo/aee632my6ch6oc/p90?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
+    p99: "http://localhost:3000/d-solo/dee637m08bgg0a/p99?orgId=1&timezone=browser&var-query0=&editIndex=0&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
     error500: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_5xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
-    error400: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_4xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
+    error400: "http://localhost:3000/d-solo/bee5sivy2wfeod/errors4xx?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
     rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
     traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true"
   };
