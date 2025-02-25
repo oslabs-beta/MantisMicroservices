@@ -66,7 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     { label: 'P99', measurement: 'p99_latency', field: 'p99' },
     { label: 'Error Rate 500', measurement: 'error_5xx', field: 'count' },
     { label: 'Error Rate 400', measurement: 'error_4xx', field: 'count' },
-    { label: 'Requests per second', measurement: 'rps', field: 'rps' },
+    { label: 'rps', measurement: 'rps', field: 'rps' },
     { label: 'Traffic per endpoint', measurement: 'traffic', field: 'count' },
   ];
 
@@ -89,52 +89,39 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     setRefreshKey(prev => prev + 1); // Force iframe refresh
   };
 
-  // Get from and to time parameters based on selected timeFrame
-  const getTimeParams = () => {
-    switch (timeFrame) {
-      case '10m': return { from: 'now-10m', to: 'now' };
-      case '1h': return { from: 'now-1h', to: 'now' };
-      case '8h': return { from: 'now-8h', to: 'now' };
-      case '16h': return { from: 'now-16h', to: 'now' };
-      case '1d': return { from: 'now-1d', to: 'now' };
-      case '1w': return { from: 'now-1w', to: 'now' };
-      default: return { from: 'now-3d', to: 'now' };
-    }
+  // Hardcoded iframe URLs for each panel
+  const iframeUrls = {
+    // Overview panel iframes
+    overview: {
+      latency: "http://localhost:3000/d-solo/dee5d7b3eom4ge/new-dashboard?orgId=1&timezone=browser&var-query0=&editIndex=0&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
+      errors: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_5xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
+      rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
+      traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true"
+    },
+    // Individual tab iframes
+    p50: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p50_latency&var-field=p50&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
+    p90: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p90_latency&var-field=p90&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
+    p99: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p99_latency&var-field=p99&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
+    error500: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_5xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
+    error400: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=error_4xx&var-field=count&var-endpoint=%2Fpayment&panelId=2&_feature.dashboardSceneSolo=true",
+    rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
+    traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true"
   };
 
-  // // Build the Grafana URL with all required variables
-  // const buildGrafanaUrl = (panelId: number) => {
-  //   const dashboardId = 'becykw30pefpce';
-  //   const dashboardName = 'testing-grafana-with-volume';
-    
-  //   // Get the current tab's measurement and field
-  //   const currentTab = tabData[activeTab];
-  //   const measurement = currentTab.measurement || '';
-  //   const field = currentTab.field || '';
-    
-  //   // Get time parameters
-  //   const { from, to } = getTimeParams();
-    
-  //   // Build the URL with all necessary parameters - removing timezone
-  //   return `http://localhost:3000/d-solo/${dashboardId}/${dashboardName}?orgId=1
-  //     &var-bucket=${encodeURIComponent(userBucket)}
-  //     &var-endpoint=${encodeURIComponent(selectedEndpoint || '')}
-  //     &var-field=${encodeURIComponent(field)}
-  //     &var-measurement=${encodeURIComponent(measurement)}
-  //     &from=${from}
-  //     &to=${to}
-  //     &panelId=${panelId}`;
-  // };
-
-  // // Log current state for debugging
-  // useEffect(() => {
-  //   console.log("Current state:", {
-  //     timeFrame,
-  //     selectedEndpoint,
-  //     activeTab,
-  //     viewType
-  //   });
-  // }, [timeFrame, selectedEndpoint, activeTab, viewType]);
+  // Get the appropriate iframe URL based on active tab
+  const getIframeUrl = () => {
+    switch (activeTab) {
+      case 0: return null; // Overview tab shows multiple panels
+      case 1: return iframeUrls.p50;
+      case 2: return iframeUrls.p90;
+      case 3: return iframeUrls.p99;
+      case 4: return iframeUrls.error500;
+      case 5: return iframeUrls.error400;
+      case 6: return iframeUrls.rps;
+      case 7: return iframeUrls.traffic;
+      default: return iframeUrls.p50;
+    }
+  };
 
   return (
     <div>
@@ -197,23 +184,45 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
         {viewType === 'Overview' ? (
           // Show multiple panels for overview
           <div className="grid grid-cols-2 gap-3 max-h-[600px]">
-            {[1, 2, 3, 4].map((panel) => (
-              <iframe
-                key={`${panel}-${refreshKey}`}
-                src="http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p90_latency&var-query0=&var-field=p90&editIndex=3&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo" 
-                className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
-                title={`overview-panel-${panel}`}
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            ))}
+            <iframe
+              key={`latency-${refreshKey}`}
+              src={iframeUrls.overview.latency}
+              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
+              title="Latency Overview"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+            <iframe
+              key={`errors-${refreshKey}`}
+              src={iframeUrls.overview.errors}
+              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
+              title="Errors Overview"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+            <iframe
+              key={`rps-${refreshKey}`}
+              src={iframeUrls.overview.rps}
+              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
+              title="RPS Overview"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+            <iframe
+              key={`traffic-${refreshKey}`}
+              src={iframeUrls.overview.traffic}
+              className="w-full h-auto min-w-[275px] min-h-[275px] max-w-[600px] max-h-[600px] aspect-video"
+              title="Traffic Overview"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
           </div>
         ) : (
           // Single panel for other views
           <div className="flex justify-center">
             <iframe
               key={`panel-${activeTab}-${refreshKey}`}
-              src="http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p50_latency&var-query0=&var-field=p50&editIndex=3&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo"
+              src={getIframeUrl()}
               className="w-full h-auto min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[1200px] aspect-video"
               title={`${viewType}-panel`}
               frameBorder="0"
@@ -227,6 +236,3 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
 };
 
 export default Dashboard;
-
-
-
