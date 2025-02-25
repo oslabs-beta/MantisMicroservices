@@ -24,5 +24,4 @@ dist-ssr
 *.sw?
 
 # data
-influx_data/
 mongo_data/

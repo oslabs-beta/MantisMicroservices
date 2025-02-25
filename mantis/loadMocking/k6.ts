@@ -33,6 +33,14 @@ export const options = {
       tags: { scenario: "error4xx" },
     },
 
+    trafficPerEndpoint: {
+      executor: "constant-vus",
+      vus: 10,
+      duration: "30s",
+      exec: "testtrafficEndpoint",
+      tags: { scenario: "trafficPerEndpoint" },
+    },
+
     // error5xxScenario: {
     //   executor: "constant-vus",
     //   vus: 10,
@@ -41,7 +49,7 @@ export const options = {
     //   tags: { scenario: "error5xx" },
     // },
 
-    
+
   },
 };
 
@@ -75,7 +83,6 @@ export function testRpsEndpoint() {
   sleep(1); // wait 1s before next iteration
 }
 
-// testLatencyEndpoint: Logs in, calls /latencyp50
 export function testLatency(params) {
   const user = users[__VU % users.length];
 
@@ -105,7 +112,6 @@ export function testLatencyEndpoint() {
   testLatency("50");
   testLatency("90");
   testLatency("99");
-
   sleep(1);
 }
 
@@ -134,7 +140,6 @@ export function testError4xx(error, params) {
         "4xx request triggered": (r) => r.status >= 400 && r.status < 500,
       });
     }
-
     sleep(1); // wait 1s before next iteration
   }
 }
@@ -149,6 +154,7 @@ export function testError4xxEndpoint() {
   sleep(1);
 }
 
+export function testtrafficEndpoint() {}
 
 
 // export function testError5xx(error, params) {
