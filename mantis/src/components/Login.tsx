@@ -56,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       }
       const data = await response.json();
       alert('Login successful!');
-      
+
       // Notify parent of successful login, if callback provided
       if (onLoginSuccess) {
         onLoginSuccess({
@@ -65,13 +65,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           email: data.user.email,
           token: data.token,
           influxToken: data.user.influxToken,
-          bucket: data.user.bucket
+          bucket: data.user.bucket,
         });
       }
-      
+
       // Automatically route to the dashboard after login
       navigate('/dashboard');
-      
     } catch (error) {
       console.error('Login error:', error);
       alert('Error during login');
@@ -79,50 +78,50 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="login-container flex justify-center items-center w-full">
+    <div className='login-container flex justify-end items-center w-full translate-y-28'>
       {/* Glass/blur effect container */}
       <div
-        className="
+        className='
           login-form w-full max-w-sm p-6 
           rounded-xl shadow-2xl 
           bg-[rgba(25,59,45,0.5)] 
           backdrop-blur-md
-        "
+        '
       >
         <h1
-          className="text-2xl font-semibold text-white mb-4"
+          className='text-2xl font-semibold text-white mb-4'
           style={{ fontFamily: '"Faustina", sans-serif' }}
         >
           Login
         </h1>
 
         {/* Main form */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
           {/* Email or Username */}
           <input
-            type="text"
-            id="email"
-            placeholder="Email or Username"
+            type='text'
+            id='email'
+            placeholder='Email or Username'
             value={email}
             onChange={handleEmailChange}
-            className="w-full p-2 rounded-md focus:outline-none border focus:ring-2 focus:ring-[#A3CD9A]"
+            className='w-full p-2 rounded-md focus:outline-none border hover:bg-white focus:bg-white focus:ring-2 focus:ring-[#A3CD9A]'
           />
 
           {/* Password */}
           <input
-            type="password"
-            id="password"
-            placeholder="Password"
+            type='password'
+            id='password'
+            placeholder='Password'
             value={password}
             onChange={handlePasswordChange}
-            className="w-full p-2 rounded-md focus:outline-none border focus:ring-2 focus:ring-[#A3CD9A]"
+            className='w-full p-2 rounded-md focus:outline-none border hover:bg-white focus:bg-white focus:ring-2 focus:ring-[#A3CD9A]'
           />
 
           {/* Forgot Password */}
-          <div className="text-right">
+          <div className='text-right'>
             <button
-              type="button"
-              className="text-sm text-[#fdb53d] hover:text-[#fce3a9]"
+              type='button'
+              className='text-sm text-[#fdb53d] hover:text-[#fce3a9]'
             >
               Forgot Password
             </button>
@@ -130,8 +129,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
           {/* Sign In */}
           <button
-            type="submit"
-            className="login-button w-full py-2 mt-2 rounded-md bg-[#A3CD9A] text-[#193B2D] font-semibold hover:bg-[#fdf6bf] transition-colors duration-200"
+            type='submit'
+            className='login-button w-full py-2 mt-2 rounded-md bg-[#A3CD9A] text-[#193B2D] font-semibold hover:bg-[#fdf6bf] transition-colors duration-200'
             style={{ fontFamily: '"Faustina", sans-serif' }}
           >
             Sign In
@@ -139,11 +138,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
           {/* Register */}
           <button
-            type="button"
+            type='button'
             onClick={handleRegister}
-            className="text-sm text-white mt-2 hover:underline"
+            className='text-sm text-white mt-2 hover:underline'
           >
-            Don&apos;t have an account? <span className="font-bold">Register</span>
+            Don&apos;t have an account?{' '}
+            <span className='font-bold'>Register</span>
           </button>
         </form>
       </div>

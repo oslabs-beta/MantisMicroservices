@@ -7,10 +7,10 @@ import ecosystemImage from '../assets/Ecosystem.png';
 
 const Home: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col text-xl">
+    <div className='min-h-screen flex flex-col text-xl'>
       {/* Hero Section */}
       <section
-        className="
+        className='
           relative 
           bg-gradient-to-r 
           from-[#0f2922] 
@@ -23,7 +23,7 @@ const Home: React.FC = () => {
           flex-col 
           md:flex-row
           overflow-hidden
-        "
+        '
       >
         {/* Animated Wave Pattern (Background) */}
         <div className="wave-background absolute inset-0 overflow-hidden -z-0 opacity-30">
@@ -105,16 +105,16 @@ const Home: React.FC = () => {
       </section>
 
       {/* Wave Divider from Hero to Features */}
-      <div className="relative w-full h-20 -mt-1">
+      <div className='relative w-full h-20 -mt-1'>
         <svg
-          className="absolute bottom-0 left-0 w-full h-full text-[#1a1a1a]"
-          fill="currentColor"
-          viewBox="0 0 1440 320"
-          preserveAspectRatio="none"
+          className='absolute bottom-0 left-0 w-full h-full text-[#1a1a1a]'
+          fill='currentColor'
+          viewBox='0 0 1440 320'
+          preserveAspectRatio='none'
         >
           <path
-            fill="currentColor"
-            d="M0,64L30,74.7C60,85,120,107,180,138.7C240,171,300,213,360,197.3C420,181,480,107,540,101.3C600,96,660,160,720,186.7C780,213,840,203,900,192C960,181,1020,171,1080,154.7C1140,139,1200,117,1260,112C1320,107,1380,117,1410,122.7L1440,128L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z"
+            fill='currentColor'
+            d='M0,64L30,74.7C60,85,120,107,180,138.7C240,171,300,213,360,197.3C420,181,480,107,540,101.3C600,96,660,160,720,186.7C780,213,840,203,900,192C960,181,1020,171,1080,154.7C1140,139,1200,117,1260,112C1320,107,1380,117,1410,122.7L1440,128L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z'
           />
         </svg>
       </div>
@@ -123,7 +123,7 @@ const Home: React.FC = () => {
       <section className="bg-[#1a1a1a] text-white flex flex-col md:flex-row items-center justify-evenly py-16 px-8">
         {/* Feature 1 */}
         <div
-          className="
+          className='
             max-w-sm 
             mb-12 
             md:mb-0 
@@ -132,12 +132,12 @@ const Home: React.FC = () => {
             transition-transform 
             duration-300 
             hover:scale-105
-          "
+          '
         >
           <img
             src={mantisIcon1}
-            alt="Dynamic Loading"
-            className="mx-auto w-40 h-40 mb-4"
+            alt='Dynamic Loading'
+            className='mx-auto w-40 h-40 mb-4'
           />
           <h3 className="text-2xl font-bold text-emerald-400">Dynamic Loading</h3>
           <p className="mt-2 text-base text-gray-300">
@@ -146,7 +146,7 @@ const Home: React.FC = () => {
         </div>
         {/* Feature 2 */}
         <div
-          className="
+          className='
             max-w-sm 
             mb-12 
             md:mb-0 
@@ -155,12 +155,12 @@ const Home: React.FC = () => {
             transition-transform 
             duration-300 
             hover:scale-105
-          "
+          '
         >
           <img
             src={mantisIcon2}
-            alt="Performance Monitoring"
-            className="mx-auto w-40 h-40 mb-4"
+            alt='Performance Monitoring'
+            className='mx-auto w-40 h-40 mb-4'
           />
           <h3 className="text-2xl font-bold text-emerald-400">Performance Monitoring</h3>
           <p className="mt-2 text-base text-gray-300">
@@ -169,19 +169,19 @@ const Home: React.FC = () => {
         </div>
         {/* Feature 3 */}
         <div
-          className="
+          className='
             max-w-sm 
             text-center 
             transform 
             transition-transform 
             duration-300 
             hover:scale-105
-          "
+          '
         >
           <img
             src={mantisIcon3}
-            alt="Seamless Observability"
-            className="mx-auto w-40 h-40 mb-4"
+            alt='Seamless Observability'
+            className='mx-auto w-40 h-40 mb-4'
           />
           <h3 className="text-2xl font-bold text-emerald-400">Seamless Observability</h3>
           <p className="mt-2 text-base text-gray-300">
