@@ -8,33 +8,69 @@ export const sections = [
     content: (
       <>
         <p className="text-lg mb-6">
-          Mantis aggregates metrics—such as response times, latencies, error rates, and throughput—from your microservices and then forwards them to Prometheus (and optionally InfluxDB) for storage and Grafana for visualization. The result is a centralized dashboard that helps you quickly identify outages and performance bottlenecks.
+          Mantis is a comprehensive microservice monitoring solution that provides real-time metrics, visualization, and intelligent traffic routing for your distributed applications.
         </p>
         
-        <h3 className="text-2xl font-semibold mb-3 text-emerald-400">Key Features</h3>
-        <ul className="list-disc list-inside space-y-2 ml-4">
-          <li className="text-lg">
-            <span className="font-medium text-white">API Gateway & Metrics Collector:</span> Acts as the entry point for all incoming requests, collecting data about each request before passing it on to the target microservice (or a Wiremock simulation).
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">Real-Time Monitoring:</span> Automatically scrapes and forwards metrics to Prometheus, where they can be queried or graphed by tools like Grafana.
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">User Management via MongoDB:</span> Stores user credentials (username/password) in MongoDB.
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">Integration with InfluxDB:</span> Per-user tokens are generated to store metrics in individual InfluxDB buckets for more granular analysis and historical storage.
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">Browser-Based Dashboard:</span> Offers real-time visualization of microservice performance (latency, error rates, throughput, etc.).
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">Dockerized Stack:</span> Run everything—Mantis, Prometheus, Grafana, and Wiremock—inside Docker containers for easy setup and deployment.
-          </li>
-          <li className="text-lg">
-            <span className="font-medium text-white">Planned NPM Module:</span> Developers will be able to integrate Mantis directly into their Node.js microservices by installing it via npm install mantis.
-          </li>
-        </ul>
+        <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237] mb-6">
+          <h3 className="text-xl font-semibold mb-3 text-emerald-400">Quick Start with NPM</h3>
+          <p className="mb-4">Install our SDK directly into your Node.js applications:</p>
+          <div className="bg-[#111827] rounded-md p-3 mb-2">
+            <code className="text-gray-100 text-sm">npm install mantis-sdk</code>
+          </div>
+          <div className="bg-[#111827] rounded-md p-3 mb-2">
+            <code className="text-gray-100 text-sm">const Mantis = require("mantis-sdk");</code>
+          </div>
+          <div className="bg-[#111827] rounded-md p-3">
+            <code className="text-gray-100 text-sm">Mantis.start();</code>
+          </div>
+        </div>
+        
+        <p className="text-lg mb-6">
+          With Mantis, you can monitor your microservices in real-time, visualize performance metrics, and make data-driven decisions to optimize your application's performance.
+        </p>
+      </>
+    )
+  },
+  {
+    id: "key-features",
+    title: "Key Features",
+    content: (
+      <>
+        <p className="text-lg mb-6">
+          Mantis provides a lightweight, easy-to-integrate solution for monitoring your microservices directly in your browser.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Lightweight Integration</h3>
+            <p>Simple NPM package installation with minimal configuration required to start monitoring your services.</p>
+          </div>
+          
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Real-time Monitoring</h3>
+            <p>Track key performance metrics like response times, error rates, and request volumes as they happen.</p>
+          </div>
+          
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Browser-based Dashboard</h3>
+            <p>Access all your metrics through an intuitive browser interface without additional tools.</p>
+          </div>
+          
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Intelligent Routing</h3>
+            <p>Automatically route traffic based on service health and performance metrics.</p>
+          </div>
+          
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Service Simulation</h3>
+            <p>Test your application with simulated microservices using the integrated Wiremock functionality.</p>
+          </div>
+          
+          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Customizable Alerts</h3>
+            <p>Set thresholds and receive notifications when your services aren't performing as expected.</p>
+          </div>
+        </div>
       </>
     )
   },
@@ -59,54 +95,68 @@ export const sections = [
           The diagram above illustrates how all components of the Mantis ecosystem work together to provide comprehensive monitoring and visualization of your microservices.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Wiremock</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Simulates microservices for testing</p>
-            <p><span className="font-medium text-white">Benefit:</span> Test without real microservices</p>
-          </div>
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-4 text-emerald-400">Core Components</h3>
           
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Mantis API Gateway</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Entry point for requests, collects metrics</p>
-            <p><span className="font-medium text-white">Benefit:</span> Centralized monitoring</p>
-          </div>
-          
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Prometheus</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Stores time-series metrics</p>
-            <p><span className="font-medium text-white">Benefit:</span> Powerful querying capabilities</p>
-          </div>
-          
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">InfluxDB</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Long-term metrics storage</p>
-            <p><span className="font-medium text-white">Benefit:</span> Better for historical analysis</p>
-          </div>
-          
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">Grafana</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Visualization platform</p>
-            <p><span className="font-medium text-white">Benefit:</span> Interactive dashboards</p>
-          </div>
-          
-          <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-400">MongoDB</h3>
-            <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Stores user credentials</p>
-            <p><span className="font-medium text-white">Benefit:</span> Secure authentication</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">Mantis API Gateway</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Acts as an API Gateway, collecting and exposing metrics about incoming requests.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Serves as the main entry point for real-time data gathering, forwarding relevant metrics to Prometheus.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Centralized monitoring and traffic management.</p>
+            </div>
+            
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">Wiremock</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Simulates microservices for testing and development.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Provides mock responses based on predefined rules, allowing testing without real microservices.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Test without deploying actual microservices.</p>
+            </div>
+            
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">Prometheus</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Collects and stores time-series metrics data.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Scrapes metrics from Mantis and other services, optimized for real-time monitoring.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Powerful querying capabilities and real-time alerting.</p>
+            </div>
+            
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">InfluxDB</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Long-term metrics storage with time-series optimization.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Provides native support for time windows, grouping by intervals, and retention policies with high write throughput.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Efficient storage and retrieval of API performance metrics.</p>
+            </div>
+            
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">Grafana</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Visualization platform for metrics.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Connects to InfluxDB and Prometheus as data sources, creating interactive dashboards.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Interactive dashboards and alerting capabilities.</p>
+            </div>
+            
+            <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+              <h4 className="text-xl font-semibold mb-2 text-emerald-400">MongoDB</h4>
+              <p className="mb-2"><span className="font-medium text-white">Purpose:</span> Stores user credentials and application configuration.</p>
+              <p className="mb-2"><span className="font-medium text-white">Technical Details:</span> Provides flexible schema handling for dynamic data while maintaining simplicity.</p>
+              <p><span className="font-medium text-white">Benefit:</span> Secure authentication and user-specific data storage.</p>
+            </div>
           </div>
         </div>
         
-        <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237]">
+        <div className="bg-[#0f2922] p-6 rounded-lg shadow-md border border-[#164237] mb-6">
           <h3 className="text-xl font-semibold mb-3 text-emerald-400">Data Flow</h3>
           <ol className="list-decimal list-inside space-y-2 ml-4">
-            <li className="text-lg">Client requests are routed through the Mantis API Gateway</li>
-            <li className="text-lg">Mantis forwards requests to the target microservice (or Wiremock)</li>
-            <li className="text-lg">Metrics are collected and sent to Prometheus and/or InfluxDB</li>
-            <li className="text-lg">Grafana pulls data from these sources to create visualizations</li>
-            <li className="text-lg">Users access the dashboard to monitor system performance</li>
+            <li className="text-lg">Client requests are routed through the <span className="text-emerald-300">Mantis API Gateway</span></li>
+            <li className="text-lg">The gateway forwards requests to the target microservice (or <span className="text-emerald-300">Wiremock</span> for simulated services)</li>
+            <li className="text-lg">As requests are processed, the gateway collects performance metrics</li>
+            <li className="text-lg">Metrics are sent to <span className="text-emerald-300">Prometheus</span> for immediate analysis and <span className="text-emerald-300">InfluxDB</span> for long-term storage</li>
+            <li className="text-lg"><span className="text-emerald-300">Grafana</span> pulls data from these sources to create visualizations</li>
+            <li className="text-lg">Users access the dashboard to monitor system performance and receive alerts</li>
+            <li className="text-lg">User authentication is handled through <span className="text-emerald-300">MongoDB</span></li>
           </ol>
         </div>
+        
+
       </>
     )
   },

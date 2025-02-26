@@ -248,13 +248,13 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
         {viewType === 'Overview' ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Latency Panel */}
-            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden group relative">
+            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden">
               <div className="bg-[#0a1e19] px-4 py-3 border-b border-gray-700 flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-medium text-white">Latency Overview</h3>
                   <p className="text-xs text-gray-400">Response time metrics across all endpoints</p>
                 </div>
-                <div className="relative">
+                <div className="relative group">
                   <button className="text-gray-400 hover:text-white focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -288,13 +288,13 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
             </div>
             
             {/* Error Rate Panel */}
-            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden group relative">
+            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden">
               <div className="bg-[#0a1e19] px-4 py-3 border-b border-gray-700 flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-medium text-white">Error Rate (4xx)</h3>
                   <p className="text-xs text-gray-400">Client error responses over time</p>
                 </div>
-                <div className="relative">
+                <div className="relative group">
                   <button className="text-gray-400 hover:text-white focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -329,13 +329,13 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
             </div>
             
             {/* RPS Panel */}
-            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden group relative">
+            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden">
               <div className="bg-[#0a1e19] px-4 py-3 border-b border-gray-700 flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-medium text-white">Requests Per Second</h3>
                   <p className="text-xs text-gray-400">Traffic volume across services</p>
                 </div>
-                <div className="relative">
+                <div className="relative group">
                   <button className="text-gray-400 hover:text-white focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
@@ -370,13 +370,13 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
             </div>
             
             {/* Traffic Panel */}
-            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden group relative">
+            <div className="bg-[#193B2D] rounded-lg shadow-lg overflow-hidden">
               <div className="bg-[#0a1e19] px-4 py-3 border-b border-gray-700 flex justify-between items-center">
                 <div>
                   <h3 className="text-lg font-medium text-white">Traffic Distribution</h3>
                   <p className="text-xs text-gray-400">Request volume by endpoint</p>
                 </div>
-                <div className="relative">
+                <div className="relative group">
                   <button className="text-gray-400 hover:text-white focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
