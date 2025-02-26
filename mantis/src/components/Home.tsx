@@ -6,7 +6,6 @@ import mantisIcon3 from '../assets/8.png';
 import OpenSourceLabsLogo from '../assets/OpenSourceLabsLogo.png';
 import Dashboard1 from '../assets/Dashboard1.png';
 import Dashboard2 from '../assets/Dashboard2.png';
-import CodesmithLogo from '../assets/CodesmithLogo.png';
 
 const Home: React.FC = () => {
   return (
