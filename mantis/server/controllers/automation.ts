@@ -93,7 +93,7 @@ const triggerErrors = async (endpoint) => {
 console.log(`🚀 Triggering ${endpoint} with token:`, userToken);
   try {
     console.log(`Triggering erros for ${endpoint}...`);
-    const response1 = await axios.get(`http://localhost:3001/api/erro4xx?endpoint=/${endpoint}`, {
+    const response1 = await axios.get(`http://localhost:3001/api/error4xx?endpoint=/${endpoint}`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     console.log("✅ Response:", response1.status);
