@@ -6,7 +6,7 @@ import cors from "cors";
 import endpointRoutes from "./routes/endpointRoute.ts";
 import metricsRoutes from "./routes/metricsRoute.ts";
 import userRoutes from "./routes/userRoute.ts";
-import { loginAndStoreToken, triggerEndpoint } from "./controllers/automation.ts";
+import { loginAndStoreToken, triggerEndpoint, userToken, triggerErrors } from "./controllers/automation.ts";
 // import { set } from "mongoose";
 
 const PORT = process.env.PORT || 3001;
@@ -55,49 +55,24 @@ app.use("/api", endpointRoutes);
 app.use("/api", metricsRoutes);
 app.use("/api", userRoutes);
 
-//Automated login and trigger
 
+// Log in once at startup
 loginAndStoreToken().then(() => {
-  console.log("✅ Background job initialized.");
+  console.log("✅ Background job initialized. Using token:", userToken);
 });
 
-// Run endpoints every 40s (40,000 ms)
+// Run main traffic endpoints every 40s
 setInterval(() => {
-  triggerEndpoint("payment");
-}, 40000);
+  console.log("🔁 Triggering endpoints with token:", userToken);
+  const endpoints = ["payment", "order", "user", "travel"];
+  endpoints.forEach((endpoint) => triggerEndpoint(endpoint));
+}, 40000);;
 
+// Run lower-priority endpoints every 120s
 setInterval(() => {
-  triggerEndpoint("order");
-}, 40000);
-
-setInterval(() => {
-  triggerEndpoint("user");
-}, 40000);
-
-setInterval(() => {
-  triggerEndpoint("travel");
-}, 40000);
-
-setInterval(() => {
-  triggerEndpoint("createUser");
-}, 120000);
-
-setInterval(() => {
-  triggerEndpoint("dashboard");
-}, 120000);
-
-setInterval(() => {
-  triggerEndpoint("login1");
-}, 120000);
-
-setInterval(() => {
-  triggerEndpoint("home");
-}, 120000);
-
-setInterval(() => {
-  triggerEndpoint("payment_card");
-}, 120000);
-
+  const extraEndpoints = ["createUser", "dashboard", "login1", "home", "payment_card"];
+  extraEndpoints.forEach((endpoint) => triggerErrors(endpoint)); // Pass each endpoint
+}, 60000);
 
 //Global error handler
 const errorHandler: ErrorRequestHandler = (

@@ -4,6 +4,7 @@ import { Point, InfluxDB } from "@influxdata/influxdb-client";
 import { Response, NextFunction, RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/types";
 import User from "../models/userModel";
+import {generateModifier} from "./automation.ts"
 
 const wiremock_base = process.env.WIREMOCK_BASE || "http://wiremock:8080";
 
@@ -63,7 +64,10 @@ export const rpsController: RequestHandler = async (
     }
 
     const firstVal = data.data.result[0]?.value;
-    const rps = firstVal ? parseFloat(firstVal[1]) : 0;
+    let rps = firstVal ? parseFloat(firstVal[1]) : 0;
+
+    const modifierFunction = generateModifier(wiremockEndpoint);
+    rps = modifierFunction(rps);
 
     const user = await User.findOne({ username });
     if (!user || !user.influxToken || !user.bucket) {
@@ -97,7 +101,7 @@ export const rpsController: RequestHandler = async (
       metric: "rps",
       wiremockEnpoint: wiremockEndpoint,
       wiremockData: wiremockData,
-      value: rps,
+      value: rps.toFixed(2),
       source: "Prometheus",
       user: username,
     });
@@ -175,7 +179,10 @@ export const trafficEndpoint: RequestHandler = async (
     }
 
     const firstVal = data.data.result[0]?.value;
-    const traffic = firstVal ? parseFloat(firstVal[1]) : 0;
+    let traffic = firstVal ? parseFloat(firstVal[1]) : 0;
+
+    const modifierFunction = generateModifier(wiremockEndpoint);
+    traffic = modifierFunction(traffic);
 
     const orgName = process.env.INFLUX_ORG || "MainOrg";
     const writeApi = new InfluxDB({
@@ -196,7 +203,7 @@ export const trafficEndpoint: RequestHandler = async (
       wiremockEndpoint: wiremockEndpoint,
       wiremockData: wiremockData,
       metric: `traffic_${wiremockEndpoint}`,
-      value: traffic,
+      value: traffic.toFixed(2),
       source: "Prometheus",
       user: username,
     });
@@ -205,3 +212,11 @@ export const trafficEndpoint: RequestHandler = async (
     return next(err);
   }
 };
+
+
+// function generateModifier(endpoint: string): (val: number) => number {
+//   const hash = endpoint.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0); // Sum char codes
+//   const multiplier = (hash % 3) + 1.5; // Ensures a unique multiplier between 1.5 and 3.5
+//   const randomOffset = (hash % 5) + Math.random() * 5; // Ensures a unique offset between 0-10
+//   return (val: number) => val * multiplier + randomOffset;
+// }

@@ -3,6 +3,7 @@ import { Response, NextFunction, RequestHandler } from "express";
 import axios from "axios";
 import User from "../models/userModel";
 import { Point, InfluxDB } from "@influxdata/influxdb-client";
+import {generateModifier} from "./automation.ts"
 
 const wiremock_base = process.env.WIREMOCK_BASE || "http://wiremock:8080";
 
@@ -74,7 +75,10 @@ export const error4xx: RequestHandler = async (
     }
 
     const firstVal = data.data.result[0]?.value;
-    const error4xx = firstVal ? parseFloat(firstVal[1]) : 0;
+    let error4xx = firstVal ? parseFloat(firstVal[1]) : 0;
+
+    const modifierFunction = generateModifier(wiremockEndpoint);
+    error4xx = modifierFunction(error4xx);
 
     const orgName = process.env.INFLUX_ORG || "MainOrg";
     const writeApi = new InfluxDB({
@@ -95,7 +99,7 @@ export const error4xx: RequestHandler = async (
       wiremockEndpoint: wiremockEndpoint,
       wiremockData: wiremockData,
       metric: "error4xx",
-      value: error4xx,
+      value: error4xx.toFixed(2),
       source: "Prometheus",
       user: username,
     });
