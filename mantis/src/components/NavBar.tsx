@@ -41,6 +41,16 @@ const NavBar: React.FC = () => {
     navigate('/login');
   };
 
+  // Handle dashboard navigation with authentication check
+  const handleDashboardClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isLoggedIn) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
+
   return (
     <nav className='flex items-center justify-between bg-[#193B2D] px-6 py-3 shadow-md sticky top-0 z-50'>
       {/* Left side - logo and brand name */}
@@ -80,13 +90,13 @@ const NavBar: React.FC = () => {
           GitHub
         </a>
         
-        {/* Dashboard button - always visible and most prominent */}
-        <Link
-          to='/dashboard'
+        {/* Dashboard button - now with authentication check */}
+        <button
+          onClick={handleDashboardClick}
           className='px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-all shadow-md hover:shadow-lg text-sm'
         >
           Dashboard
-        </Link>
+        </button>
         
         {/* Login/Logout button */}
         {isLoggedIn ? (
