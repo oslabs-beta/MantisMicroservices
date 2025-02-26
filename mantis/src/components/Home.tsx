@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import mantisIcon1 from '../assets/6.png';
 import mantisIcon2 from '../assets/7.png';
 import mantisIcon3 from '../assets/8.png';
-import ecosystemImage from '../assets/Ecosystem.png';
 import OpenSourceLabsLogo from '../assets/OpenSourceLabsLogo.png';
-import CodesmithLogo from '../assets/CodesmithLogo.png';
+import Dashboard1 from '../assets/Dashboard1.png';
+import Dashboard2 from '../assets/Dashboard2.png';
 
 const Home: React.FC = () => {
   return (
@@ -192,49 +192,57 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Installation Section */}
-      <section className="bg-[#0f2922] text-white p-8 py-16">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold mb-8 text-center">Get Started in Minutes</h2>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-[#0a1e19] p-6 rounded-lg border border-[#164237]">
-              <h3 className="text-2xl font-bold mb-4 text-emerald-400">Docker Installation</h3>
-              <p className="mb-4 text-gray-300">
-                Deploy the entire Mantis stack with a single command:
-              </p>
-              <div className="bg-[#111827] rounded-md p-3">
-                <code className="text-gray-100 text-sm">git clone https://github.com/your-org/mantis.git</code>
+      {/* Transition Element */}
+      <div className="bg-gradient-to-b from-[#1a1a1a] to-[#0a1e19] h-24 flex items-center justify-center">
+        <div className="w-24 h-1 bg-emerald-400 rounded-full"></div>
+      </div>
+
+      {/* Dashboard Preview Section - Enhanced styling with larger images */}
+      <section className="bg-gradient-to-b from-[#0a1e19] to-[#0f2922] text-white p-8 py-16 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500 rounded-full filter blur-[100px]"></div>
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-600 rounded-full filter blur-[100px]"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <h2 className="text-5xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 to-emerald-500">Dashboard Preview</h2>
+          <p className="text-center text-xl mb-12 max-w-3xl mx-auto text-gray-300">
+            Experience the power of Mantis with our intuitive, feature-rich dashboard that provides real-time insights into your microservices ecosystem.
+          </p>
+          
+          {/* Larger single-column layout for bigger images */}
+          <div className="flex flex-col gap-16 items-center">
+            <div className="bg-gradient-to-br from-[#0f2922] to-[#164237] p-6 rounded-xl border border-emerald-700/50 shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/30 w-full max-w-5xl">
+              <div className="overflow-hidden rounded-lg shadow-inner shadow-black/50">
+                <img 
+                  src={Dashboard1} 
+                  alt="Mantis Dashboard Preview" 
+                  className="rounded-md w-full h-auto shadow-lg transform transition-transform hover:scale-105 duration-700"
+                />
               </div>
-              <div className="bg-[#111827] rounded-md p-3 mt-2">
-                <code className="text-gray-100 text-sm">cd mantis</code>
-              </div>
-              <div className="bg-[#111827] rounded-md p-3 mt-2">
-                <code className="text-gray-100 text-sm">docker-compose up --build</code>
-              </div>
+              <p className="mt-6 text-center text-emerald-400 font-medium text-xl">Service Health Monitoring</p>
             </div>
-            <div className="bg-[#0a1e19] p-6 rounded-lg border border-[#164237]">
-              <h3 className="text-2xl font-bold mb-4 text-emerald-400">NPM Package</h3>
-              <p className="mb-4 text-gray-300">
-                Integrate Mantis directly into your Node.js applications:
-              </p>
-              <div className="bg-[#111827] rounded-md p-3">
-                <code className="text-gray-100 text-sm">npm install mantis-sdk</code>
+            
+            <div className="bg-gradient-to-br from-[#0f2922] to-[#164237] p-6 rounded-xl border border-emerald-700/50 shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/30 w-full max-w-5xl">
+              <div className="overflow-hidden rounded-lg shadow-inner shadow-black/50">
+                <img 
+                  src={Dashboard2} 
+                  alt="Mantis Analytics Dashboard" 
+                  className="rounded-md w-full h-auto shadow-lg transform transition-transform hover:scale-105 duration-700"
+                />
               </div>
-              <div className="bg-[#111827] rounded-md p-3 mt-2">
-                <code className="text-gray-100 text-sm">const Mantis = require("mantis-sdk");</code>
-              </div>
-              <div className="bg-[#111827] rounded-md p-3 mt-2">
-                <code className="text-gray-100 text-sm">Mantis.start();</code>
-              </div>
+              <p className="mt-6 text-center text-emerald-400 font-medium text-xl">Performance Analytics</p>
             </div>
           </div>
-          <div className="mt-10 flex justify-center">
+          
+          <div className="mt-16 text-center">
             <Link 
               to="/dashboard" 
-              className="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-md transition-all shadow-lg hover:shadow-xl flex items-center justify-center text-lg"
+              className="px-10 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-md transition-all shadow-lg hover:shadow-xl inline-flex items-center justify-center text-xl"
             >
-              Launch Dashboard
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              Explore Full Dashboard
+              <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </Link>
@@ -259,19 +267,26 @@ const Home: React.FC = () => {
                 Fostering innovation through open source collaboration and community-driven development.
               </p>
             </div>
-            
-            <div className="partner-card bg-[#0f2922] p-8 rounded-lg shadow-lg border border-[#164237] flex flex-col items-center transition-transform hover:scale-105">
-              <img 
-                src={CodesmithLogo} 
-                alt="Codesmith" 
-                className="h-24 mb-6 object-contain"
-              />
-              <h3 className="text-xl font-semibold mb-2 text-emerald-300">Codesmith</h3>
-              <p className="text-gray-300 text-center max-w-xs">
-                Empowering software engineers through immersive education and technical excellence.
-              </p>
-            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Register Button Section - Added below Partners */}
+      <section className="bg-gradient-to-b from-[#1a1a1a] to-[#0f2922] text-white p-8 py-16 text-center">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold mb-6 text-emerald-400">Ready to Get Started?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Join the Mantis community today and take control of your microservice monitoring.
+          </p>
+          <Link 
+            to="/register" 
+            className="px-10 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-md transition-all shadow-lg hover:shadow-xl inline-flex items-center justify-center text-xl"
+          >
+            Register Now
+            <svg className="w-6 h-6 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </Link>
         </div>
       </section>
 

@@ -32,16 +32,6 @@ const Documentation: React.FC = () => {
           ))}
           
           <div className="bg-[#0a1e19] border border-emerald-700 rounded-lg p-6 mb-8">
-            <h2 className="text-2xl font-semibold mb-2 text-emerald-400">Upcoming Features</h2>
-            <ul className="list-disc list-inside space-y-2 ml-4 text-emerald-200">
-              <li className="text-lg">In-browser microservice testing - Test your microservices directly in the browser without additional tools</li>
-              <li className="text-lg">Enhanced real-time analytics with customizable alert thresholds</li>
-              <li className="text-lg">Expanded visualization options for complex microservice architectures</li>
-            </ul>
-            <p className="text-lg mt-4 font-medium text-emerald-300">Stay tuned for these exciting updates!</p>
-          </div>
-          
-          <div className="bg-[#0a1e19] border border-emerald-700 rounded-lg p-6 mb-8">
             <h2 className="text-2xl font-semibold mb-2 text-emerald-400">Ready to Get Started?</h2>
             <p className="text-lg mb-4 text-emerald-200">
               You now have Mantis up and running. You can simulate microservices, collect real-time metrics, store them in Prometheus/InfluxDB, and visualize everything in Grafana.
