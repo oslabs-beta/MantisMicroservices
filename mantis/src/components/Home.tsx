@@ -4,6 +4,8 @@ import mantisIcon1 from '../assets/6.png';
 import mantisIcon2 from '../assets/7.png';
 import mantisIcon3 from '../assets/8.png';
 import ecosystemImage from '../assets/Ecosystem.png';
+import OpenSourceLabsLogo from '../assets/OpenSourceLabsLogo.png';
+import CodesmithLogo from '../assets/CodesmithLogo.png';
 
 const Home: React.FC = () => {
   return (
@@ -190,24 +192,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Ecosystem Section */}
-      <section className="bg-[#0f2922] text-white p-8 flex flex-col items-center justify-center py-16">
-        <h2 className="text-4xl font-bold mb-8 text-center">The Mantis Ecosystem</h2>
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-emerald-700/20 rounded-lg"></div>
-          <img
-            src={ecosystemImage}
-            alt="Mantis Ecosystem"
-            className="w-full max-w-4xl h-auto mx-auto rounded-lg shadow-xl relative z-10"
-          />
-        </div>
-        <p className="mt-8 text-xl max-w-3xl text-center text-gray-300">
-          Mantis integrates seamlessly with your existing infrastructure, connecting your microservices with powerful monitoring tools like Prometheus and Grafana.
-        </p>
-      </section>
-
       {/* Installation Section */}
-      <section className="bg-[#1a1a1a] text-white p-8 py-16">
+      <section className="bg-[#0f2922] text-white p-8 py-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold mb-8 text-center">Get Started in Minutes</h2>
           <div className="grid md:grid-cols-2 gap-8">
@@ -256,6 +242,39 @@ const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Our Partners Section - Added below the Installation Section */}
+      <section className="bg-[#1a1a1a] text-white p-8 py-16">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl font-bold mb-12 text-center text-emerald-400">Our Partners</h2>
+          
+          <div className="flex flex-col md:flex-row justify-center items-center gap-12">
+            <div className="partner-card bg-[#0f2922] p-8 rounded-lg shadow-lg border border-[#164237] flex flex-col items-center transition-transform hover:scale-105">
+              <img 
+                src={OpenSourceLabsLogo} 
+                alt="Open Source Labs" 
+                className="h-24 mb-6 object-contain"
+              />
+              <h3 className="text-xl font-semibold mb-2 text-emerald-300">Open Source Labs</h3>
+              <p className="text-gray-300 text-center max-w-xs">
+                Fostering innovation through open source collaboration and community-driven development.
+              </p>
+            </div>
+            
+            <div className="partner-card bg-[#0f2922] p-8 rounded-lg shadow-lg border border-[#164237] flex flex-col items-center transition-transform hover:scale-105">
+              <img 
+                src={CodesmithLogo} 
+                alt="Codesmith" 
+                className="h-24 mb-6 object-contain"
+              />
+              <h3 className="text-xl font-semibold mb-2 text-emerald-300">Codesmith</h3>
+              <p className="text-gray-300 text-center max-w-xs">
+                Empowering software engineers through immersive education and technical excellence.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Wave Divider from White to Dark Footer */}
       <div className="relative w-full h-32 -mt-1 bg-[#1a1a1a]">
         <svg
@@ -292,7 +311,7 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-6 pt-6 text-center">
-            <p>Copyright © 2023 Mantis Microservice, Inc.</p>
+            <p>Copyright © 2025 Mantis Microservice, Inc.</p>
           </div>
         </div>
       </footer>

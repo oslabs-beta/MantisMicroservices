@@ -31,13 +31,24 @@ const Register: React.FC<RegisterProps> = ({ onRegisterSuccess }) => {
       }
       
       const data = await response.json();
+      
+      // Store user data in localStorage
+      localStorage.setItem('mantisUser', JSON.stringify({
+        _id: data.user._id,
+        username: data.user.username,
+        email: email,
+        token: data.token || '',
+        influxToken: data.influxToken,
+        bucket: data.bucket
+      }));
+      
       alert('Registration successful!');
       
       if (onRegisterSuccess) {
         onRegisterSuccess({
           _id: data.user._id,
           username: data.user.username,
-        //   token: data.token,
+          token: data.token || '',
           influxToken: data.influxToken,
           bucket: data.bucket
         });
