@@ -40,7 +40,7 @@ export const rpsController: RequestHandler = async (
     console.log("Fetching metrics from Prometheus for user:", username);
 
     const prometheusUrl = "http://prometheus:9090/api/v1/query";
-    const query = `sum(rate(http_api_requests_total [1m]))`;
+    const query = `sum(rate(http_api_requests_total[1m]))`;
 
     const { data } = await axios.get(prometheusUrl, {
       timeout: 5000,
@@ -107,51 +107,163 @@ export const rpsController: RequestHandler = async (
   }
 };
 
+
+
+
 // Wiremock  with diferent endpoints
+// export const trafficEndpoint: RequestHandler = async (
+//   req: AuthenticatedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     if (!req.user) {
+//       return res.status(401).json({ error: "Unauthorized: No user found" });
+//     }
+
+//     const { username } = req.user;
+
+//     if (!username) {
+//       return res
+//         .status(400)
+//         .json({ error: "Missing username in the request body" });
+//     }
+
+//     const user = await User.findOne({ username });
+
+//     if (!user || !user.influxToken || !user.bucket) {
+//       return res
+//         .status(404)
+//         .json({ error: "No influx credentials found for this user." });
+//     }
+
+//     const wireResp = await axios.get(`${wiremock_base}/__admin/mappings`);
+  
+//     const wiremockEndpoints: string[] = wireResp.data.mappings.map(
+//       (m: any) => m.request.urlPath || m.request.url || ""
+//     );
+
+//     console.log(
+//       `Fetching traffic metrics from Prometheus for user: ${username}`
+//     );
+
+//     const prometheusUrl = "http://prometheus:9090/api/v1/query";
+//     const query = `sum(rate(http_requests_total[1m])) by (route)`;
+
+//     const { data } = await axios.get(prometheusUrl, {
+//       timeout: 5000,
+//       params: { query: query },
+//     });
+
+//     console.log("Prometheus raw response:", data);
+
+//     if (
+//       !data ||
+//       data.status !== "success" ||
+//       !Array.isArray(data.data?.result) ||
+//       data.data.result.length === 0
+//     ) {
+//       console.warn("No valid traffic data from Prometheus");
+//       return res
+//         .status(404)
+//         .json({ message: "No traffic data available from Prometheus" });
+//     }
+
+//     const trafficData: Array<{ route: string; traffic: number }> =
+//       data.data.result.map((entry: any) => ({
+//         route: entry.metric.route,
+//         traffic: parseFloat(entry.value[1]),
+//       }));
+
+//       const merged = wiremockEndpoints.map((endpoint) => {
+//         // Find any traffic entry whose route matches the endpoint
+//         const match = trafficData.find((t) => t.route === endpoint);
+//         return {
+//           endpoint,
+//           traffic: match ? match.traffic : 0, // 0 if no matching traffic
+//         };
+//       });
+
+//       const orgName = process.env.INFLUX_ORG || "MainOrg";
+//       const writeApi = new InfluxDB({
+//         url: process.env.INFLUX_URL || "http://influxdb:8086",
+//         token: user.influxToken,
+//       }).getWriteApi(orgName, user.bucket);
+  
+//       merged.forEach(({ endpoint, traffic }) => {
+//         const point = new Point("endpoint_traffic")
+//           .tag("endpoint", endpoint)
+//           .floatField("traffic", traffic);
+//         writeApi.writePoint(point);
+//       });
+//       await writeApi.flush();
+  
+
+//     console.log(`✅ Stored traffic data for user: ${username}`);
+
+//     return res.json({
+//       message: "Traffic per Wiremock endpoint",
+//       endpoints: merged,
+//       source: "Prometheus + Wiremock",
+//       user: username,
+//     });
+//   } catch (err) {
+//     console.error("Error fetching or storing traffic data:", err);
+//     return next(err);
+//   }
+// };
+
 export const trafficEndpoint: RequestHandler = async (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    console.log("Error 4xx method in error4xx controller trigger");
+
     if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized: No user found" });
+      return res.status(401).json({ error: "Unauthorized: No userfound" });
     }
-
     const { username } = req.user;
-
     if (!username) {
       return res
         .status(400)
-        .json({ error: "Missing username in the request body" });
+        .json({ error: "Missing 'username' in the request body." });
     }
 
     const user = await User.findOne({ username });
-
     if (!user || !user.influxToken || !user.bucket) {
       return res
         .status(404)
-        .json({ error: "No influx credentials found for this user." });
+        .json({ error: "No Influx credentials found for this user." });
     }
 
-    const wireResp = await axios.get(`${wiremock_base}/__admin/mappings`);
-  
-    const wiremockEndpoints: string[] = wireResp.data.mappings.map(
-      (m: any) => m.request.urlPath || m.request.url || ""
-    );
+    const endpointQuery = req.query.endpoint as string;
+    const wiremockEndpoint = endpointQuery || "/default";
+    let wiremockData: any = null;
 
-    console.log(
-      `Fetching traffic metrics from Prometheus for user: ${username}`
-    );
+    try {
+      const wiremockResponse = await axios.get(
+        `${wiremock_base}${wiremockEndpoint}`
+      );
+      wiremockData = wiremockResponse.data;
+    } catch (err) {
+      console.error(
+        `Error fetching wiremock data for endpoint: ${wiremockEndpoint}`,
+        err
+      );
+      wiremockData = { error: "Failed calling Wiremock" };
+    }
 
+    console.log("Fetching metrics from Prometheus for user:", username);
     const prometheusUrl = "http://prometheus:9090/api/v1/query";
-    const query = `sum(rate(http_requests_total{job="express-api"}[1m])) by (route)`;
+    const query ='http_api_requests_total';
+
 
     const { data } = await axios.get(prometheusUrl, {
       timeout: 5000,
       params: { query: query },
     });
-
     console.log("Prometheus raw response:", data);
 
     if (
@@ -160,52 +272,42 @@ export const trafficEndpoint: RequestHandler = async (
       !Array.isArray(data.data?.result) ||
       data.data.result.length === 0
     ) {
-      console.warn("No valid traffic data from Prometheus");
+      console.warn("No valid 4xx data from Prometheus.");
       return res
         .status(404)
-        .json({ message: "No traffic data available from Prometheus" });
+        .json({ 
+          wiremockData: wiremockData,
+          message: "No traffic data available from Prometheus" });
     }
 
-    const trafficData: Array<{ route: string; traffic: number }> =
-      data.data.result.map((entry: any) => ({
-        route: entry.metric.route,
-        traffic: parseFloat(entry.value[1]),
-      }));
+    const firstVal = data.data.result[0]?.value;
+    const traffic = firstVal ? parseFloat(firstVal[1]) : 0;
 
-      const merged = wiremockEndpoints.map((endpoint) => {
-        // Find any traffic entry whose route matches the endpoint
-        const match = trafficData.find((t) => t.route === endpoint);
-        return {
-          endpoint,
-          traffic: match ? match.traffic : 0, // 0 if no matching traffic
-        };
-      });
+    const orgName = process.env.INFLUX_ORG || "MainOrg";
+    const writeApi = new InfluxDB({
+      url: process.env.INFLUX_URL || "http://influxdb:8086",
+      token: user.influxToken,
+    }).getWriteApi(orgName, user.bucket, "ms");
 
-      const orgName = process.env.INFLUX_ORG || "MainOrg";
-      const writeApi = new InfluxDB({
-        url: process.env.INFLUX_URL || "http://influxdb:8086",
-        token: user.influxToken,
-      }).getWriteApi(orgName, user.bucket);
-  
-      merged.forEach(({ endpoint, traffic }) => {
-        const point = new Point("endpoint_traffic")
-          .tag("endpoint", endpoint)
-          .floatField("traffic", traffic);
-        writeApi.writePoint(point);
-      });
-      await writeApi.flush();
-  
+    const point = new Point("traffic")
+      .tag("endpoint", wiremockEndpoint)
+      .floatField(`traffic_${wiremockEndpoint}`, traffic);
 
-    console.log(`✅ Stored traffic data for user: ${username}`);
+    writeApi.writePoint(point);
+    await writeApi.flush();
 
-    return res.json({
-      message: "Traffic per Wiremock endpoint",
-      endpoints: merged,
-      source: "Prometheus + Wiremock",
+    console.log("Traffic data written to InfluxDB for user:", username);
+
+    return res.status(200).json({
+      wiremockEndpoint: wiremockEndpoint,
+      wiremockData: wiremockData,
+      metric: `traffic_${wiremockEndpoint}`,
+      value: traffic,
+      source: "Prometheus",
       user: username,
     });
   } catch (err) {
-    console.error("Error fetching or storing traffic data:", err);
+    console.error("Error in error4xx controller", err);
     return next(err);
   }
 };
