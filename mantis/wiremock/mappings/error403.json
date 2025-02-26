@@ -1,7 +1,7 @@
 {
     "request": {
       "method": "GET",
-      "url": "/test403"
+      "url": "/login1"
     },
     "response": {
       "status": 403,

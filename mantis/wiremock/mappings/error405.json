@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "url": "/test405"
+    "url": "/payment_card"
   },
   "response": {
     "status": 405,

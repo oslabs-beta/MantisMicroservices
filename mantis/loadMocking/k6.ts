@@ -91,7 +91,7 @@ export function testRpsEndpoint() {
   sleep(1); // wait 1s before next iteration
 }
 
-export function testLatency(params) {
+export function testLatency(params, num) {
   const user = users[__VU % users.length];
 
   // login
@@ -104,22 +104,22 @@ export function testLatency(params) {
 
   const token = loginRes.json("token");
   if (token) {
-    // call /latencyp50
+    for (let i = 0; i < num; i++){
     const latRes = http.get(`http://express-api:3001/latencyp${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     check(latRes, {
       [`Latency ${params} request successful`]: (r) => r.status === 200,
-    });
+    })};
   }
 
   sleep(1);
 }
 
 export function testLatencyEndpoint() {
-  testLatency("50");
-  testLatency("90");
-  testLatency("99");
+  testLatency("50", 12);
+  testLatency("90", 10);
+  testLatency("99", 8);
   sleep(1);
 }
 
@@ -192,10 +192,10 @@ export function testTraffic(endpoint, params) {
 }
 
 export function testTrafficEndpoint() {
-  testTraffic("order", 10);
-  testTraffic("payment", 6);
-  testTraffic("user", 4);
-  testTraffic("travel", 5);
+  testTraffic("order", 20);
+  testTraffic("payment", 12);
+  testTraffic("user", 15);
+  testTraffic("travel", 9);
 
   sleep(1);
 }

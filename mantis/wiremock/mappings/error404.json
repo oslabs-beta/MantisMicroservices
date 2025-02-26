@@ -1,7 +1,7 @@
 {
     "request": {
       "method": "GET",
-      "url": "/test404"
+      "url": "/home"
     },
     "response": {
       "status": 404,
