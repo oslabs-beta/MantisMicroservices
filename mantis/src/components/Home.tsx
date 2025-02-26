@@ -190,24 +190,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Ecosystem Section */}
-      <section className="bg-[#0f2922] text-white p-8 flex flex-col items-center justify-center py-16">
-        <h2 className="text-4xl font-bold mb-8 text-center">The Mantis Ecosystem</h2>
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-emerald-700/20 rounded-lg"></div>
-          <img
-            src={ecosystemImage}
-            alt="Mantis Ecosystem"
-            className="w-full max-w-4xl h-auto mx-auto rounded-lg shadow-xl relative z-10"
-          />
-        </div>
-        <p className="mt-8 text-xl max-w-3xl text-center text-gray-300">
-          Mantis integrates seamlessly with your existing infrastructure, connecting your microservices with powerful monitoring tools like Prometheus and Grafana.
-        </p>
-      </section>
-
       {/* Installation Section */}
-      <section className="bg-[#1a1a1a] text-white p-8 py-16">
+      <section className="bg-[#0f2922] text-white p-8 py-16">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold mb-8 text-center">Get Started in Minutes</h2>
           <div className="grid md:grid-cols-2 gap-8">

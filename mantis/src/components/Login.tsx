@@ -55,6 +55,17 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         return;
       }
       const data = await response.json();
+      
+      // Store user data in localStorage
+      localStorage.setItem('mantisUser', JSON.stringify({
+        _id: data.user._id,
+        username: data.user.username,
+        email: data.user.email,
+        token: data.token,
+        influxToken: data.user.influxToken,
+        bucket: data.user.bucket,
+      }));
+      
       alert('Login successful!');
 
       // Notify parent of successful login, if callback provided

@@ -1,10 +1,27 @@
 // src/components/NavBar.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import mantisLogo from '../assets/wingLogo.png'; // an image of your choice
 
 const NavBar: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Check authentication status on component mount
+  useEffect(() => {
+    const user = localStorage.getItem('mantisUser');
+    setIsLoggedIn(!!user);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('mantisUser');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
 
   return (
     <nav className='flex items-center justify-between bg-[#193B2D] px-6 py-3 shadow-md sticky top-0 z-50'>
@@ -26,7 +43,16 @@ const NavBar: React.FC = () => {
       </Link>
 
       {/* Right side - navigation links */}
-      <div className='flex items-center space-x-5'>
+      <div className='flex items-center space-x-4'>
+        {/* Documentation link */}
+        <Link
+          to="/documentation"
+          className="text-gray-200 hover:text-emerald-400 transition-colors text-sm font-medium"
+        >
+          Docs
+        </Link>
+        
+        {/* GitHub link */}
         <a
           href='https://github.com/oslabs-beta/mantis_project'
           target='_blank'
@@ -36,26 +62,30 @@ const NavBar: React.FC = () => {
           GitHub
         </a>
         
-        <button
-          onClick={() => navigate('/dashboard')}
-          className='px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-all shadow-md hover:shadow-lg text-sm'
+        {/* Dashboard button - always visible and most prominent */}
+        <Link
+          to='/dashboard'
+          className='px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-medium rounded-md transition-all shadow-md hover:shadow-lg text-sm'
         >
           Dashboard
-        </button>
+        </Link>
         
-        <button
-          onClick={() => navigate('/login')}
-          className='px-4 py-2 bg-gray-800/70 hover:bg-gray-700/70 text-white font-medium rounded-md transition-all border border-[#164237] backdrop-blur-sm text-sm'
-        >
-          Login
-        </button>
-        
-        <button
-          onClick={() => navigate('/register')}
-          className='px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 text-white font-medium rounded-md transition-all border border-[#164237] backdrop-blur-sm text-sm'
-        >
-          Register
-        </button>
+        {/* Login/Logout button */}
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className='px-4 py-2 bg-gray-800/70 hover:bg-gray-700/70 text-white font-medium rounded-md transition-all border border-[#164237] backdrop-blur-sm text-sm'
+          >
+            Log Out
+          </button>
+        ) : (
+          <button
+            onClick={handleLogin}
+            className='px-4 py-2 bg-gray-800/70 hover:bg-gray-700/70 text-white font-medium rounded-md transition-all border border-[#164237] backdrop-blur-sm text-sm'
+          >
+            Login
+          </button>
+        )}
       </div>
     </nav>
   );
