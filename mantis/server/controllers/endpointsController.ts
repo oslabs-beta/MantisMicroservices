@@ -3,7 +3,7 @@ import axios from "axios";
 // import { influxDB } from "../controllers/userController";
 import { Response, NextFunction, RequestHandler } from "express";
 import { AuthenticatedRequest } from "../types/types";
-import User from "../models/userModel";
+// import User from "../models/userModel";
 
 const wiremock_base = process.env.WIREMOCK_BASE || "http://wiremock:8080";
 
@@ -14,25 +14,6 @@ export const getEnpoints: RequestHandler = async (
 ) => {
   console.log("Getting Endpoints ...");
   try {
-    if (!req.user) {
-      return res.status(401).json({ error: "Unauthorized: No user found" });
-    }
-
-    const { username } = req.user;
-
-    if (!username) {
-      return res
-        .status(400)
-        .json({ error: "Missing 'username' in the request body." });
-    }
-
-    const user = await User.findOne({ username });
-
-    if (!user || !user.influxToken || !user.bucket) {
-      return res
-        .status(404)
-        .json({ error: "No Influx credentials found for this user." });
-    }
 
     const wireResp = await axios.get(`${wiremock_base}/__admin/mappings`);
 

@@ -67,7 +67,7 @@ app.get("/latencyp50", authMiddleware, p50Latency);
 app.get("/latencyp90", authMiddleware, p90Latency);
 app.get("/latencyp99", authMiddleware, p99Latency);
 
-app.get("/endpoints", authMiddleware, getEnpoints);
+app.get("/endpoints", getEnpoints);
 
 app.post("/create-user", createNewUser);
 app.post("/login", loginUser);

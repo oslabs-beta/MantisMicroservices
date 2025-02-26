@@ -37,9 +37,17 @@ export const options = {
       executor: "constant-vus",
       vus: 10,
       duration: "30s",
-      exec: "testtrafficEndpoint",
+      exec: "testTrafficEndpoint",
       tags: { scenario: "trafficPerEndpoint" },
     },
+
+    // trafficPerEndpoint: {
+    //   executor: "constant-vus",
+    //   vus: 10,
+    //   duration: "30s",
+    //   exec: "testTrafficEndpoint",
+    //   tags: { scenario: "trafficPerEndpoint" },
+    // },
 
     // error5xxScenario: {
     //   executor: "constant-vus",
@@ -154,45 +162,41 @@ export function testError4xxEndpoint() {
   sleep(1);
 }
 
-export function testtrafficEndpoint() {}
+export function testTraffic(endpoint, params) {
+  // pick user based on VU number
+  const user = users[__VU % users.length];
 
+  // login
+  const loginRes = http.post(
+    "http://express-api:3001/login",
+    JSON.stringify(user),
+    { headers: { "Content-Type": "application/json" } }
+  );
+  check(loginRes, { "login successful": (r) => r.status === 200 });
 
-// export function testError5xx(error, params) {
-//   // pick user based on VU number
-//   const user = users[__VU % users.length];
+  const token = loginRes.json("token");
+  if (token) {
+    // call /rps
+    for (let i = 0; i < params; i++) {
+      const res = http.get(
+        `http://express-api:3001/trafficEndpoint?endpoint=/${endpoint}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-//   // login
-//   const loginRes = http.post(
-//     "http://express-api:3001/login",
-//     JSON.stringify(user),
-//     { headers: { "Content-Type": "application/json" } }
-//   );
-//   check(loginRes, { "login successful": (r) => r.status === 200 });
+      check(res, {
+        "Traffic per Endpoint request triggered": (r) => r.status === 200,
+      });
+    }
+    sleep(1); // wait 1s before next iteration
+  }
+}
 
-//   const token = loginRes.json("token");
-//   if (token) {
-//     // call /rps
-//     for (let i = 0; i < params; i++) {
-//       const res = http.get(
-//         `http://express-api:3001/error5xx?endpoint=/test${error}`,
-//         { headers: { Authorization: `Bearer ${token}` } }
-//       );
+export function testTrafficEndpoint() {
+  testTraffic("order", 10);
+  testTraffic("payment", 6);
+  testTraffic("user", 4);
+  testTraffic("travel", 5);
 
-//       check(res, {
-//         "4xx request triggered": (r) => r.status >= 400 && r.status < 500,
-//       });
-//     }
+  sleep(1);
+}
 
-//     sleep(1); // wait 1s before next iteration
-//   }
-// }
-
-// export function testError5xxEndpoint() {
-//   testError4xx(500, 2);
-//   testError4xx(501, 6);
-//   testError4xx(502, 4);
-//   testError4xx(503, 5);
-//   testError4xx(504, 3);
-
-//   sleep(1);
-// }

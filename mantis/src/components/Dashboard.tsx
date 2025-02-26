@@ -98,6 +98,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     overview: {
       latency: "http://localhost:3000/d-solo/dee5d7b3eom4ge/new-dashboard?orgId=1&timezone=browser&var-query0=&editIndex=0&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
       rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
+      traffic: "http://localhost:3000/d-solo/bee6ekhh16dq8c/trafficpere?orgId=1&timezone=browser&tab=queries&panelId=1&__feature.dashboardSceneSolo"
       traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true",
       error400: "http://localhost:3000/d-solo/bee5sivy2wfeod/errors4xx?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo"
     },
@@ -107,7 +108,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
     p99: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=p99_latency&var-field=p99&var-endpoint=%2Fpayment&panelId=1&_feature.dashboardSceneSolo=true",
     error400: "http://localhost:3000/d-solo/bee5sivy2wfeod/errors4xx?orgId=1&timezone=browser&var-bucket=bucket_test&panelId=1&__feature.dashboardSceneSolo",
     rps: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=rps&var-field=rps&var-endpoints=%2Forder&panelId=1&__feature.dashboardSceneSolo",
-    traffic: "http://localhost:3000/d-solo/becykw30pefpce/testing-grafana-with-volume?orgId=1&timezone=browser&var-bucket=bucket_test&var-measurement=traffic&var-field=count&var-endpoint=%2Fpayment&panelId=4&_feature.dashboardSceneSolo=true"
+    traffic: "http://localhost:3000/d-solo/bee6ekhh16dq8c/trafficpere?orgId=1&timezone=browser&tab=queries&panelId=1&__feature.dashboardSceneSolo"
   };
 
   // Get the appropriate iframe URL based on active tab
