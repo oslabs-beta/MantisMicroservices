@@ -7,10 +7,28 @@ const NavBar: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Check authentication status on component mount
+  // Check authentication status on component mount and periodically
   useEffect(() => {
-    const user = localStorage.getItem('mantisUser');
-    setIsLoggedIn(!!user);
+    // Function to check if user is logged in
+    const checkLoginStatus = () => {
+      const user = localStorage.getItem('mantisUser');
+      setIsLoggedIn(!!user);
+    };
+    
+    // Check immediately on mount
+    checkLoginStatus();
+    
+    // Set up event listener for storage changes (for cross-tab synchronization)
+    window.addEventListener('storage', checkLoginStatus);
+    
+    // Also set up a periodic check (every 2 seconds)
+    const intervalId = setInterval(checkLoginStatus, 2000);
+    
+    // Clean up event listeners and interval
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      clearInterval(intervalId);
+    };
   }, []);
 
   const handleLogout = () => {
