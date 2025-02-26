@@ -44,7 +44,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/login', {
+      const response = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password }),
@@ -55,6 +55,20 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
         return;
       }
       const data = await response.json();
+      
+      // Store user data in localStorage
+      localStorage.setItem('mantisUser', JSON.stringify({
+        _id: data.user._id,
+        username: data.user.username,
+        email: data.user.email,
+        token: data.token,
+        influxToken: data.user.influxToken,
+        bucket: data.user.bucket,
+      }));
+      
+      // Force a storage event for the NavBar to detect
+      window.dispatchEvent(new Event('storage'));
+      
       alert('Login successful!');
 
       // Notify parent of successful login, if callback provided

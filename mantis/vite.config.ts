@@ -16,6 +16,17 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+
     },
+
+    watch: {
+      ignored: [
+        '**/influx_data/**',  // Ignore InfluxDB WAL files
+        '**/grafana_data/**', // Ignore Grafana DB files
+        '**/server/**/*.ts',  // Ignore backend changes
+        '**/node_modules/**', // Ignore dependencies
+      ],
+    },
+
   },
 });

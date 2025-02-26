@@ -114,8 +114,10 @@ export const loginUser: RequestHandler  = async (req: Request, res: Response, ne
         const token = jwt.sign(
           { username: user.username, id: user._id },
           process.env.JWT_SECRET || "fallback_secret",
-          { expiresIn: "2h" }
+          { expiresIn: "96h" }
         );
+
+        console.log("🌈Logged in successfully with token:", token);
   
         return res.status(200).json({
           message: "Logged in successfully",

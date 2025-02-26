@@ -40,24 +40,6 @@ export const options = {
       exec: "testTrafficEndpoint",
       tags: { scenario: "trafficPerEndpoint" },
     },
-
-    // trafficPerEndpoint: {
-    //   executor: "constant-vus",
-    //   vus: 10,
-    //   duration: "30s",
-    //   exec: "testTrafficEndpoint",
-    //   tags: { scenario: "trafficPerEndpoint" },
-    // },
-
-    // error5xxScenario: {
-    //   executor: "constant-vus",
-    //   vus: 10,
-    //   duration: "30s",
-    //   exec: "testError5xxEndpoint",
-    //   tags: { scenario: "error5xx" },
-    // },
-
-
   },
 };
 
@@ -96,7 +78,7 @@ export function testLatency(params, num) {
 
   // login
   const loginRes = http.post(
-    "http://express-api:3001/login",
+    "http://express-api:3001/api/login",
     JSON.stringify(user),
     { headers: { "Content-Type": "application/json" } }
   );
@@ -105,7 +87,7 @@ export function testLatency(params, num) {
   const token = loginRes.json("token");
   if (token) {
     for (let i = 0; i < num; i++){
-    const latRes = http.get(`http://express-api:3001/latencyp${params}`, {
+    const latRes = http.get(`http://express-api:3001/api/latencyp${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     check(latRes, {
@@ -129,7 +111,7 @@ export function testError4xx(error, params) {
 
   // login
   const loginRes = http.post(
-    "http://express-api:3001/login",
+    "http://express-api:3001/api/login",
     JSON.stringify(user),
     { headers: { "Content-Type": "application/json" } }
   );
@@ -140,7 +122,7 @@ export function testError4xx(error, params) {
     // call /rps
     for (let i = 0; i < params; i++) {
       const res = http.get(
-        `http://express-api:3001/error4xx?endpoint=test${error}`,
+        `http://express-api:3001/api/error4xx?endpoint=test${error}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -168,7 +150,7 @@ export function testTraffic(endpoint, params) {
 
   // login
   const loginRes = http.post(
-    "http://express-api:3001/login",
+    "http://express-api:3001/api/login",
     JSON.stringify(user),
     { headers: { "Content-Type": "application/json" } }
   );
@@ -179,7 +161,7 @@ export function testTraffic(endpoint, params) {
     // call /rps
     for (let i = 0; i < params; i++) {
       const res = http.get(
-        `http://express-api:3001/trafficEndpoint?endpoint=/${endpoint}`,
+        `http://express-api:3001/api/trafficEndpoint?endpoint=/${endpoint}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

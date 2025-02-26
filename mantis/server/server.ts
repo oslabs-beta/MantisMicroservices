@@ -1,25 +1,18 @@
 import express, { ErrorRequestHandler, NextFunction, Response } from "express";
 import { ServerError, UserPrometheus } from "./types/types.js";
-import {
-  rpsController,
-  trafficEndpoint,
-} from "./controllers/trafficController.ts";
-import { error4xx } from "./controllers/errorsController.ts";
-import {
-  p50Latency,
-  p90Latency,
-  p99Latency,
-} from "./controllers/latencyController.ts";
-import { authMiddleware } from "./middleware/authMiddleware.ts";
-import { createNewUser, loginUser } from "./controllers/userController.ts";
-import { getEnpoints } from "./controllers/endpointsController.ts";
 import * as client from "prom-client";
 import connectDB from "./mongoConnection.ts";
 import cors from "cors";
-const PORT = process.env.PORT || 3001;
+import endpointRoutes from "./routes/endpointRoute.ts";
+import metricsRoutes from "./routes/metricsRoute.ts";
+import userRoutes from "./routes/userRoute.ts";
+import { loginAndStoreToken, triggerEndpoint, userToken, triggerErrors } from "./controllers/automation.ts";
+// import { set } from "mongoose";
 
+const PORT = process.env.PORT || 3001;
 const app = express();
 
+// cors configuration
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -32,6 +25,7 @@ app.use(
 app.use(express.json());
 connectDB();
 
+// Prometheus configuration
 const httpRequestDuration = new client.Histogram({
   name: "http_request_duration_seconds",
   help: "Duration of HTTP requests in seconds",
@@ -46,7 +40,6 @@ app.use((req: UserPrometheus, res: Response, next: NextFunction) => {
       method: req.method,
       route: req.route ? req.route.path : req.originalUrl,
       status: res.statusCode,
-      // user: req.user?.username || "anonymous",
     });
   });
   next();
@@ -57,23 +50,31 @@ app.get("/metrics", async (_req, res) => {
   res.end(await client.register.metrics());
 });
 
+// Routes
+app.use("/api", endpointRoutes);
+app.use("/api", metricsRoutes);
+app.use("/api", userRoutes);
 
 
-app.get("/rps", authMiddleware, rpsController);
-app.get("/trafficEndpoint", authMiddleware, trafficEndpoint);
-app.get("/error4xx", authMiddleware, error4xx);
-// app.get("/error5xx", authMiddleware, error5xx);
-app.get("/latencyp50", authMiddleware, p50Latency);
-app.get("/latencyp90", authMiddleware, p90Latency);
-app.get("/latencyp99", authMiddleware, p99Latency);
+// Log in once at startup
+loginAndStoreToken().then(() => {
+  console.log("✅ Background job initialized. Using token:", userToken);
+});
 
-app.get("/endpoints", getEnpoints);
+// Run main traffic endpoints every 40s
+setInterval(() => {
+  console.log("🔁 Triggering endpoints with token:", userToken);
+  const endpoints = ["payment", "order", "user", "travel"];
+  endpoints.forEach((endpoint) => triggerEndpoint(endpoint));
+}, 40000);;
 
-app.post("/create-user", createNewUser);
-app.post("/login", loginUser);
+// Run lower-priority endpoints every 120s
+setInterval(() => {
+  const extraEndpoints = ["createUser", "dashboard", "login1", "home", "payment_card"];
+  extraEndpoints.forEach((endpoint) => triggerErrors(endpoint)); // Pass each endpoint
+}, 60000);
 
 //Global error handler
-
 const errorHandler: ErrorRequestHandler = (
   err: ServerError,
   _req,
@@ -92,4 +93,5 @@ const errorHandler: ErrorRequestHandler = (
 
 app.use(errorHandler);
 
+// Start server
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
