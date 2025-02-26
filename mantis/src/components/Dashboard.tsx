@@ -33,7 +33,7 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://localhost:3001/endpoints', {
+        const response = await fetch('http://localhost:3001/api/endpoints', {
           headers: {
             'Authorization': `Bearer ${loggedInUser?.token}`
           }
@@ -60,6 +60,8 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
       fetchEndpoints();
     }
   }, [loggedInUser?.token]);
+
+  
 
   // Tab data with corresponding measurement values
   const tabData = [
@@ -128,6 +130,11 @@ const Dashboard: React.FC<DashboardProps> = ({ loggedInUser }) => {
   const toggleDetailTabs = () => {
     setShowDetailTabs(!showDetailTabs);
   };
+
+  useEffect(() => {
+    console.log("Checking stored user:", localStorage.getItem("mantisUser"));
+  }, []);
+  
 
   return (
     <div className="dashboard-container bg-[#0f2922] min-h-screen">
