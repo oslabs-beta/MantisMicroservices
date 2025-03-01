@@ -77,25 +77,30 @@ Below is an example of the project’s directory layout (as seen in `MANTIS_PROJ
 
 ```
 MANTIS_PROJECT
-├─ mantis/                # Mantis core code (API gateway, business logic)
-│  ├─ dist/               # Compiled output (if you build from TypeScript)
-│  ├─ grafana_data/       # Grafana storage/data directory
-│  ├─ influx_data/        # InfluxDB storage/data directory
-│  ├─ influx_data_old/    # Old or backup Influx data
-│  ├─ loadMocking/        # Additional scripts or configs for simulating loads
-│  ├─ mongo_data/         # MongoDB storage/data directory
-│  └─ node_modules/       # Dependencies for the Mantis project
-├─ server/                # Server-side code (if separate from Mantis core)
-├─ src/                   # Frontend source code (React, etc.)
-├─ wiremock/              # Wiremock config and stubs for service simulation
-├─ create_influx_user.sh  # Script for setting up InfluxDB users
-├─ docker-compose.yml     # Orchestrates containers for Mantis + supporting services
-├─ extra_info.txt         # Additional notes or documentation
-├─ index.html             # Main HTML entry point (if front-end is served from here)
-├─ package.json           # Project dependencies and scripts
-├─ tsconfig.json          # TypeScript configuration
-├─ vite.config.ts         # Vite configuration (if using Vite for the front-end)
-└─ ...
+├─ grafana_data/ # Grafana storage/data directory
+├─ influx_data/ # InfluxDB storage/data directory
+├─ influx_data_old/ # Old or backup Influx data
+├─ loadMocking/ # Scripts or configs for simulating loads
+├─ mongo_data/ # MongoDB storage/data directory
+├─ monitoring/ # Monitoring configuration and components
+├─ server/ # Server-side code
+├─ src/ # Frontend source code
+├─ wiremock/ # Wiremock config and stubs for service simulation
+├─ .eslintrc.json # ESLint configuration
+├─ .gitignore # Git ignore file
+├─ create_influx_user.sh # Script for setting up InfluxDB users
+├─ docker-compose.yml # Orchestrates containers for Mantis + supporting services
+├─ extra_info.txt # Additional notes or documentation
+├─ index.html # Main HTML entry point
+├─ package-lock.json # Locked versions of dependencies
+├─ package.json # Project dependencies and scripts
+├─ prometheus.yml # Prometheus configuration
+├─ README.md # Project documentation
+├─ tailwind.config.js # Tailwind CSS configuration
+├─ tsconfig.app.json # TypeScript configuration for app
+├─ tsconfig.json # Main TypeScript configuration
+├─ tsconfig.node.json # TypeScript configuration for Node.js
+└─ vite.config.ts # Vite configuration
 ```
 
 ---
